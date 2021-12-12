@@ -10,7 +10,6 @@
 clear;clc;
 % Input Parameters
 filename               = 'beads_561_0.5od_HILO_3_MMStack_Default.ome'; 
-fitting_radius         = 10;   %radius of region that will be used in gaussian fitting, cannot beyond 10 pixels
 sigma                  = 1.5;  %Threshold used after convolution
 
 % Image processing & aggregate counting
@@ -28,20 +27,9 @@ img                    = max(img,[],3); %maximum intensity project
 % c        = tmpt(:,:,:,channel:colour:time*colour); %one colour channel, row x col x zaxis x time(4D hyperstack);
 % img      = mean(squeeze(c(:,:,1,:)),3); %row x col x time, The processed image is an average
 
-se                     = strel('disk',10); %create a flat structuring element for top-hat filtering
-h                      = RW2DKernel(3,1);  %create a convolution kernel 
-i_tophat               = imtophat(img,se); %top-hat filter
-i_conv                 = imfilter(i_tophat,h,'conv'); %convolution
+mask                   = aggreMask(img,sigma);
+bgmask                 = mask;
 
-x                      = i_conv(:);
-[m,s]                  = normfit(x);
-i_conv(i_conv<sigma*s) = 0; %image thresholding
-
-se                     = strel('disk',1);   %create another flat structuring element for opening operation, with 1 radius
-mask                   = imopen(i_conv,se); %morphological open operation for filtering tiny structures(noise)
-mask(mask>0)           = 1;                 %binary the mask
-mask                   = maskFilter(mask);  %crop the edge points, which may introdu wrong estimation
-maskedImage            = mask.*img;         %the tiny spots within the original image
 
 bgEstimation_fill      = (1-mask).*img;     %bg = image - spots, estimated by performing a flood-fill operation
 filledBg               = imfill(bgEstimation_fill); %bg estimation based on bgImage
@@ -50,28 +38,51 @@ sigImage               = abs(img-filledBg); %signal = image - estimated bg
 mask                   = logical(mask);
 CC                     = bwconncomp(mask);  %8-connectivity(all direction connection will be counted)
 aggregatePoints        = CC.PixelIdxList;
-s                      = regionprops(mask,'centroid','area');
+s                      = regionprops(mask,'centroid','MinorAxisLength','MajorAxisLength');
 centroids              = cat(1,s.Centroid); %centroid for each detected points
-areas                  = cat(1,s.Area);
+longD                  = cat(1,s.MajorAxisLength); 
+shortD                 = cat(1,s.MinorAxisLength);
 
-intensity              = zeros(length(s),1); % intensity of pure signal (no background offset)
-avg_inten              = zeros(length(s),1); % average intensity of pure signal (no background offset)
-% SNB                    = zeros(length(s),1);
-sigmaY                 = zeros(length(s),1); %sigma in Y for a fitted spot
-sigmaX                 = zeros(length(s),1); %sigma in X for a fitted spot
-position               = round(centroids);
-fit_spots              = zeros(2*fitting_radius+1,2*fitting_radius+1,length(s)); %fitting spots (fitted bg + fitted sig)
-origin_spots           = zeros(2*fitting_radius+1,2*fitting_radius+1,length(s)); %original spots (in original image)
-fit_spots_noBg         = zeros(2*fitting_radius+1,2*fitting_radius+1,length(s)); %fitting spots(fitted sig)
-bgEstimation_fit       = zeros(length(s),1); %bg estimated by gaussian fitting
-
-for k                  = 1:length(s)
-    [r,c]                  = ind2sub(size(mask),cell2mat(aggregatePoints(k))); %all pixel indice for a detected spot
-    intensity(k)           = sum(sigImage(cell2mat(aggregatePoints(k))));
-    avg_inten(k)           = intensity(k)/areas(k);
-%     SNB(k)                 = avg_inten(k)/mean(filledBg(cell2mat(aggregatePoints(k))),'all')+1;
-    [fit_spots(:,:,k),origin_spots(:,:,k),sigmaY(k),sigmaX(k),bgEstimation_fit(k),fit_spots_noBg(:,:,k)] = gaussianFit(position(k,:),img,fitting_radius);
+segments  = false(512,512,length(s));
+for p = 1:length(s)
+    tmpt = false(512,512);
+    tmpt(aggregatePoints{p}) = 1;
+    dilatedR = ceil(shortD(p)/2);
+    se = strel('disk',dilatedR);
+    tmpt = imdilate(tmpt,se); 
+    segments(:,:,p) = tmpt;
 end
+sigmask = max(segments,[],3);
+
+bgEstimation_fill      = (1-sigmask).*img;     %bg = image - spots, estimated by performing a flood-fill operation
+bgImage                = imfill(bgEstimation_fill); %bg estimation based on bgImage
+sigImage               = abs(img-imfill((1-sigmask).*img)); %pure signal intensity of the detected points.
+
+sigmaY_Gaussian                 = zeros(length(s),1); %sigma in Y for a fitted spot
+sigmaX_Gaussian                 = zeros(length(s),1); %sigma in X for a fitted spot
+position_estimation_centroid    = round(centroids);
+Gaussian_fit_spots              = zeros(2*5+1,2*5+1,length(s)); %fitting spots (fitted bg + fitted sig)
+original_spots                  = zeros(2*5+1,2*5+1,length(s)); %original spots (in original image)
+Gaussian_fit_spots_noBg         = zeros(2*5+1,2*5+1,length(s)); %fitting spots(fitted sig)
+
+Centroid_intensity_estimation_noBg = zeros(length(s),1); %pure signal estimation from centriod fitting
+Gaussian_intensity_estimation_noBg = zeros(length(s),1); %pure signal estimation from gaussian fitting
+
+Gaussian_bgEstimation          = zeros(length(s),1); %bg estimated by gaussian fitting
+Centroid_bgEstimation          = zeros(length(s),1); %bg estimated by centroid fitting
+
+for k = 1:length(s)
+    Centroid_intensity_estimation_noBg(k) = sum(sigImage(aggregatePoints{k}));
+    Centroid_bgEstimation(k)              = mean(bgImage(aggregatePoints{k}));
+    [Gaussian_fit_spots(:,:,k),original_spots(:,:,k),sigmaY_Gaussian(k),sigmaX_Gaussian(k),Gaussian_bgEstimation(k),Gaussian_fit_spots_noBg(:,:,k)] = gaussianFit(position_estimation_centroid(k,:),img);
+end
+
+Gaussian_intensity_estimation_noBg = squeeze(sum(sum(Gaussian_fit_spots_noBg,1),2));
+
+Centroid_intensity_estimation_noBg = mean(Centroid_intensity_estimation_noBg);
+Gaussian_intensity_estimation_noBg = mean(Gaussian_intensity_estimation_noBg);
+
+maskedImage            = mask.*img;         %the tiny spots within the original image
 img = normalize16(img); maskedImage = normalize16(maskedImage);
 comb(:,:,1)            = maskedImage;
 comb(:,:,2)            = img+maskedImage;
@@ -83,22 +94,38 @@ f2                     = figure;
 f1.Position            = [300 300 700 650];
 imshow(img,[]); title('original image');
 
-%%
-function RW = RW2DKernel(a,sigma)
-% Laplacian of Gaussian operator, also called as 2D Ricker wavelet,
+%% Functions
+function RW = RW2DKernel(sigma)
+% Inverse Laplacian of Gaussian operator, also called as 2D Ricker wavelet,
 % similar to difference of Gaussian kernel, frequently used as a blob detector
-    x                   = (0:8*sigma) - 4*sigma; y = x;
-    [X,Y]               = meshgrid(x,y);
-    amplitude           = 1.0 / (pi * sigma * 4) * a;
-    rr_ww               = (X.^2+Y.^2)/(2.*sigma.^2);
-    RW                  = amplitude*(1-rr_ww).*exp(-rr_ww);
+    x = (0:8*sigma) - 4*sigma; y = x;
+    [X,Y] = meshgrid(x,y);
+    amplitude = 1.0 / (pi * sigma * 4);
+    rr_ww = (X.^2+Y.^2)/(2.*sigma.^2);
+    RW = amplitude*(1-rr_ww).*exp(-rr_ww);
 end
 
-function mask = maskFilter(mask)
-    mask(1:10,:)        = 0;
-    mask(end-10:end,:)  = 0;
-    mask(:,1:10)        = 0;
-    mask(:,end-10:end)  = 0;
+function mask = maskFilter(mask,sigma)
+    mask(1:4*sigma,:) = 0;
+    mask(end-4*sigma:end,:) = 0;
+    mask(:,1:4*sigma) = 0;
+    mask(:,end-4*sigma:end) = 0;
+    mask = logical(mask);
+end
+
+function mask = aggreMask(img,std)
+    se                   = strel('disk',5);
+    ksize                = 1;
+    h                    = RW2DKernel(ksize);
+    i_conv               = imfilter(imtophat(img,se),h,'conv'); 
+    x                    = i_conv(:);
+    [~,s]                = normfit(x);
+    i_conv(i_conv<std*s) = 0;
+
+    se                   = strel('disk',1);
+    mask                 = imopen(i_conv,se); %morphological open operation for filtering ting structures(noise)
+    mask(mask>0)         = 1;
+    mask                 = maskFilter(mask,ksize);
 end
 
 function img = normalize16(img)
@@ -116,7 +143,7 @@ function tiff_stack = Tifread(filename)
     end
 end
 
-function [fit_spot,image_Region,sigmaY,sigmaX,bgEstimation,fit_spot_noBg] = gaussianFit(position,original_img,fitting_radius) 
+function [fit_spot,image_Region,sigmaY,sigmaX,bgEstimation,fit_spot_noBg] = gaussianFit(position,original_img) 
 % Gaussian fitting function by using non-linear equation solver
 % INPUT
 % position       : The position for a fitted point in [x,y] (centroid position)
@@ -131,7 +158,7 @@ function [fit_spot,image_Region,sigmaY,sigmaX,bgEstimation,fit_spot_noBg] = gaus
 % bgEstimation   : Estimated background value for a given spot
 % fit_spot_noBg  : The fit spot without background value
 
-%     fitting_radius                              = 5;
+    fitting_radius                              = 5;
     amplitude_limits                            = [0 2^16];
     amplitude_range                             = diff(amplitude_limits);
     background_limits                           = [0 2^16];
@@ -139,6 +166,8 @@ function [fit_spot,image_Region,sigmaY,sigmaX,bgEstimation,fit_spot_noBg] = gaus
     sigma_limits                                = [.1 fitting_radius];
     sigma_range                                 = diff(sigma_limits);
     image_Region                                = original_img(position(2)-fitting_radius:position(2)+fitting_radius,position(1)-fitting_radius:position(1)+fitting_radius);
+    theta_limits                                = [-pi/4 pi/4];
+    theta_range                                 =  diff(theta_limits);
     
     % Placeholder
     border_region                               = ones(fitting_radius*2+1); 
@@ -153,23 +182,29 @@ function [fit_spot,image_Region,sigmaY,sigmaX,bgEstimation,fit_spot_noBg] = gaus
     AMP_guess                                   = (max(image_Region(:))-nanmean(border_region(:).*image_Region(:))-amplitude_limits(1))/amplitude_range;
     
     % non-linear fitting
-    fitted_param                                = lsqnonlin(@ASYMMETRIC_GAUSSIAN_FIT, [.5, .5, AMP_guess, .5, .5, BG_guess], [0 0 0 0 0 0], [1, 1, 1, 1, 1, 1], fitting_options);
-    fit_spot                                    = (fitted_param(6)*background_range+background_limits(1)) + (fitted_param(3)*amplitude_range+amplitude_limits(1))*...
-                                                   exp( (-(regional_indices_row-((fitted_param(1)-.5)*fitting_radius)).^2) / (2*(fitted_param(4)*sigma_range+sigma_limits(1))^2) - ...
-                                                   ((regional_indices_col-((fitted_param(2)-.5)*fitting_radius)).^2) / (2*(fitted_param(5)*sigma_range+sigma_limits(1))^2) );
+    fitted_param                                = lsqnonlin(@ASYMMETRIC_GAUSSIAN_FIT, [.5, .5, AMP_guess, .5, .5, .5, BG_guess], [0 0 0 0 0 0 0], [1, 1, 1, 1, 1, 1, 1], fitting_options);
+    [~,Guess_Image]                             = ASYMMETRIC_GAUSSIAN_FIT(fitted_param);
+    fit_spot                                    = reshape(Guess_Image,fitting_radius*2+1,fitting_radius*2+1);
     sigmaY                                      = fitted_param(4)*sigma_range+sigma_limits(1);
     sigmaX                                      = fitted_param(5)*sigma_range+sigma_limits(1);
-    bgEstimation                                = fitted_param(6)*background_range+background_limits(1);
+    bgEstimation                                = fitted_param(7)*background_range+background_limits(1);
     fit_spot_noBg                               = fit_spot - bgEstimation;
     
-    function Delta = ASYMMETRIC_GAUSSIAN_FIT(guess)
+    function [Delta,Guess_Image] = ASYMMETRIC_GAUSSIAN_FIT(guess)
         Row            = (guess(1)-.5)*fitting_radius;
         Col            = (guess(2)-.5)*fitting_radius;
         Amplitude      = guess(3)*amplitude_range+amplitude_limits(1);
         Sigma_row      = guess(4)*sigma_range+sigma_limits(1);
         Sigma_col      = guess(5)*sigma_range+sigma_limits(1);
-        Background     = guess(6)*background_range+background_limits(1);
-        Guess_Image    = Background + Amplitude*exp(-((regional_indices_row-Row).^2)/(2*Sigma_row^2)-((regional_indices_col-Col).^2)/(2*Sigma_col^2));
+        Theta          = guess(6)*theta_range+theta_limits(1);
+        Background     = guess(7)*background_range+background_limits(1);
+        
+        
+        a              = ( cos(Theta)^2 / (2*Sigma_row^2)) + (sin(Theta)^2 / (2*Sigma_col^2));
+        b              = (-sin(2*Theta) / (4*Sigma_row^2)) + (sin(2*Theta) / (4*Sigma_col^2));
+        c              = ( sin(Theta)^2 / (2*Sigma_row^2)) + (cos(Theta)^2 / (2*Sigma_col^2));
+    
+        Guess_Image    = Background + Amplitude*exp(-(a*(regional_indices_row-Row).^2 + 2*b*(regional_indices_row-Row).*(regional_indices_col-Col)+c*(regional_indices_col-Col).^2));
         Delta          = - image_Region(:) + Guess_Image(:);
     end
 end
