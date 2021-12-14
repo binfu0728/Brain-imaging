@@ -1,4 +1,4 @@
-# image_process
+# LB/LN/Oligomer in brain sample - process and analysis
 
 ***aggreCount***: core code of spot detection, test data is available on https://drive.google.com/file/d/1arLmZta4zRyWg_GWi_n65k3Fk8V60mG-/view?usp=sharing  
 ***analysis_beta2***: code for Ru to do image process and analysis at the same time  
