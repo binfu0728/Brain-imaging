@@ -4,7 +4,7 @@
 ***analysis_beta2***: code for Ru to do image process and analysis at the same time  
 ***coIncidence***: code for checking coincidence between channels, test data is available on https://drive.google.com/file/d/1DoxnzZP6AXE9TDnzBv2_1IXzj-3hV6mW/view?usp=sharing  
 ***gaussianFit***: 2D gaussian fitting for spots (not used in aggreCount and analysis_beta2, which only use centroid fitting for finding position of tiny spots)  
-***DAB_detection***: LB/LN detection in black-white DAB staining image, test data is available on 
+***DAB_detection***: LB/LN detection in black-white DAB staining image, test data is available on https://drive.google.com/drive/folders/19_O6kN9VP3fTC4ojEN2GLmOfWxAyi7Op?usp=sharing and https://drive.google.com/drive/folders/1yfgqH0mEew9aJCVtZm60o0jNY7s1mvE6?usp=sharing (40x and 100x respectively)
 
 ***- 07/12/21 update***: simpler kernel function with only one input for determining kernel size and the maskfilter function is updated correspounding to kernel size (to eliminate auto-filling artefact during the convolution). Also, the newest intensity estimation with dilated signal mask is implemented
 
