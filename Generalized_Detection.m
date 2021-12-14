@@ -3,31 +3,34 @@
 % Author: Bin Fu, bf341@cam.ac.uk
 %%
 clc;clear;
-filename      = '4_LB_neurites_40x_2_MMStack_Default.ome';
-img           = Tifread([filename,'.tif']);
-img           = mean(img,3);
-upsampling    = 4;
-gaussian_size = 200; %200 for 40x and 100x, if img has undetected but wanted large obj, choose a larger value
-bpass_size_l  = 4;   %4 for 40x and 100x, if img has undetected but wanted small obj, choose a smaller value
-bpass_size_h  = gaussian_size;
-bpass_order   = 4;
+filename          = '4_LB_neurites_40x_2_MMStack_Default.ome';
+img               = Tifread([filename,'.tif']);
+img               = mean(img,3);
+upsampling        = 4;
+gaussian_size     = 200; %200 for 40x and 100x, if img has undetected but wanted large obj, choose a larger value
+bpass_size_l      = 4;   %4 for 40x and 100x, if img has undetected but wanted small obj, choose a smaller value
+bpass_size_h      = gaussian_size;
+bpass_order       = 4;   %1 for 40X IF image, 4 for DAB due to less distinguishable background
+area_precent      = 0.6; 
+intensity_precent = 0;   %intensity post fitering is not used in DAB image
 
 %% Pre-processing
-[imgg,i]      = preFiltering(img,upsampling,gaussian_size,bpass_size_l,bpass_size_h,bpass_order);
+[imgg,i]          = preFiltering(img,upsampling,gaussian_size,bpass_size_l,bpass_size_h,bpass_order);
 
 %% Thresholding
-num_bins      = 2^16;
-counts        = imhist(i,num_bins);
-p             = counts / sum(counts);
-omega         = cumsum(p);
+num_bins          = 2^16;
+counts            = imhist(i,num_bins);
+p                 = counts / sum(counts);
+omega             = cumsum(p);
 
-idx           = find(omega>0.95);
-t             = (idx(1) - 1) / (num_bins - 1);
-BW            = imbinarize(i,t);
-BW            = imfill(BW,'holes');
+idx               = find(omega>0.95);
+t                 = (idx(1) - 1) / (num_bins - 1);
+BW                = imbinarize(i,t);
+BW                = imfill(BW,'holes');
 
 %% Post-processing
-BW            = postFiltering(BW,imgg,0.6,'area');
+BW                = postFiltering(BW,imgg,area_precent,'area');
+BW                = postFiltering(BW,imgg,intensity_precent,'intensity');
 plotResultFigure(BW,imgg);
 
 %% Analysis
