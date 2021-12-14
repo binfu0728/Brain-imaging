@@ -1,5 +1,5 @@
-% Code for DAB staining LB and LN detection. The structure of the code will 
-% be used in Generalized Detection Code as well 
+% Very draft version of generalized detection code for part of IF images and
+% all DAB black-white images
 % Author: Bin Fu, bf341@cam.ac.uk
 %%
 clc;clear;
@@ -7,15 +7,17 @@ filename          = '4_LB_neurites_40x_2_MMStack_Default.ome';
 img               = Tifread([filename,'.tif']);
 img               = mean(img,3);
 upsampling        = 4;
+mode              = 'IF';
 gaussian_size     = 200; %200 for 40x and 100x, if img has undetected but wanted large obj, choose a larger value
 bpass_size_l      = 4;   %4 for 40x and 100x, if img has undetected but wanted small obj, choose a smaller value
 bpass_size_h      = gaussian_size;
-bpass_order       = 4;   %1 for 40X IF image, 4 for DAB due to less distinguishable background
-area_precent      = 0.6; 
-intensity_precent = 0;   %intensity post fitering is not used in DAB image
+bpass_order       = 1;   %1 for 40X IF image, 4 for DAB due to less distinguishable background
+intensity_precent = 0.5; %intensity post fitering is not used in DAB image
+area_precent      = 0.3; %DAB could use 0.6
+
 
 %% Pre-processing
-[imgg,i]          = preFiltering(img,upsampling,gaussian_size,bpass_size_l,bpass_size_h,bpass_order);
+[imgg,i]          = preFiltering(img,upsampling,gaussian_size,bpass_size_l,bpass_size_h,bpass_order,mode);
 
 %% Thresholding
 num_bins          = 2^16;
@@ -29,8 +31,9 @@ BW                = imbinarize(i,t);
 BW                = imfill(BW,'holes');
 
 %% Post-processing
-BW                = postFiltering(BW,imgg,area_precent,'area');
-BW                = postFiltering(BW,imgg,intensity_precent,'intensity');
+BW                = postFiltering(BW,i,intensity_precent,'intensity');
+BW                = postFiltering(BW,i,area_precent,'area');
+
 plotResultFigure(BW,imgg);
 
 %% Analysis
@@ -50,11 +53,19 @@ imwrite(maskedImage,[filename,'_maksedImage.tif']);
 imwrite(processedFrame,[filename,'_processedFrame.tif']);
 
 %% Functions
-function [img_upsampled,img_processed] = preFiltering(img,upsampling,gsize,bsize_l,bsize_h,order)
+function [img_upsampled,img_processed] = preFiltering(img,upsampling,gsize,bsize_l,bsize_h,order,mode)
     img_upsampled = normalize16(imresize(img,upsampling,'bicubic'));
     
     img_processed = imgaussfilt(img_upsampled,gsize);
-    img_processed = img_processed - img_upsampled;
+
+    switch mode
+        case 'IF'
+            img_processed = img_upsampled - img_processed;
+        case 'DAB'
+            img_processed = img_processed - img_upsampled;
+        otherwise
+            error('wrong');    
+    end
     
     for i = 1:order
         img_processed = bandpass(img_processed,bsize_l,bsize_h);
@@ -63,7 +74,7 @@ function [img_upsampled,img_processed] = preFiltering(img,upsampling,gsize,bsize
     
 end
 
-function BW = postFiltering(BW,img,percentage,method)
+function [BW,idx] = postFiltering(BW,img,percentage,method)
     CC         = bwconncomp(BW);
     regions    = CC.PixelIdxList; 
     
@@ -90,7 +101,7 @@ function BW = postFiltering(BW,img,percentage,method)
 
     idx          = find(omega>percentage);
     idx          = find(sorting<idx(1));
-
+    
     for k = 1:length(idx)
         BW(regions{idx(k)}) = 0;
     end
