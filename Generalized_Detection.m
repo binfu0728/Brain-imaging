@@ -142,7 +142,7 @@ function tiff_stack    = Tifread(filename)
     end
 end
 
-function res = bandpass(image_array,lnoise,lobject,threshold)
+function res = bandpass(image_array,lnoise,lobject)
 % 
 % ; NAME:
 % ;               bpass
@@ -223,6 +223,6 @@ function res = bandpass(image_array,lnoise,lobject,threshold)
 %     filtered(:,(end - lzero + 1):end) = 0;
 
 %     res = filtered;
-    filtered(filtered < threshold) = 0;
+    filtered(filtered < 0) = 0;
     res = filtered;
 end
