@@ -55,7 +55,6 @@ imwrite(processedFrame,[filename,'_processedFrame.tif']);
 %% Functions
 function [img_upsampled,img_processed] = preFiltering(img,upsampling,gsize,bsize_l,bsize_h,order,mode)
     img_upsampled = normalize16(imresize(img,upsampling,'bicubic'));
-    
     img_processed = imgaussfilt(img_upsampled,gsize);
 
     switch mode
