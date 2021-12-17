@@ -96,7 +96,7 @@ for k = 1:length(filenames)
             end
 
             result_excel    = [(1:length(s))',area,intensity,background];
-            result_excel    = array2table(result_excel,"VariableNames",["No. of Olig","Area(um)","Total Intensity","Mean Background"]);
+            result_excel    = array2table(result_excel,"VariableNames",["No. of Olig","Area(pixel)","Total Intensity","Mean Background"]);
             writetable(result_excel,[resultDir,tableDir,'\','c',num2str(c),'\',filename,'_result.csv']);
             maskedImage     = normalize16(maskedImage);
             processedFrame  = normalize16(img1);
