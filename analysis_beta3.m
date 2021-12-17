@@ -95,7 +95,12 @@ for k = 1:length(filenames)
                 background(j) = mean(bgImage(aggregatePoints{j})); 
             end
 
-            result_excel    = [(1:length(s))',area,intensity,background];
+            if ~isempty(s)
+                result_excel    = [(1:length(s))',area,intensity,background];
+            else
+                result_excel    = zeros(1,4);
+            end
+            
             result_excel    = array2table(result_excel,"VariableNames",["No. of Olig","Area(pixel)","Total Intensity","Mean Background"]);
             writetable(result_excel,[resultDir,tableDir,'\','c',num2str(c),'\',filename,'_result.csv']);
             maskedImage     = normalize16(maskedImage);
