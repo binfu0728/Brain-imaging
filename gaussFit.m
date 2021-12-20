@@ -30,11 +30,6 @@ img                    = max(img,[],3); %maximum intensity project
 mask                   = aggreMask(img,sigma);
 bgmask                 = mask;
 
-
-bgEstimation_fill      = (1-mask).*img;     %bg = image - spots, estimated by performing a flood-fill operation
-filledBg               = imfill(bgEstimation_fill); %bg estimation based on bgImage
-sigImage               = abs(img-filledBg); %signal = image - estimated bg
-
 mask                   = logical(mask);
 CC                     = bwconncomp(mask);  %8-connectivity(all direction connection will be counted)
 aggregatePoints        = CC.PixelIdxList;
@@ -51,6 +46,7 @@ for p = 1:length(s)
     se = strel('disk',dilatedR);
     tmpt = imdilate(tmpt,se); 
     segments(:,:,p) = tmpt;
+    aggregatePoints(p) = bwconncomp(tmpt).PixelIdxList;
 end
 sigmask = max(segments,[],3);
 
@@ -79,8 +75,8 @@ end
 
 Gaussian_intensity_estimation_noBg = squeeze(sum(sum(Gaussian_fit_spots_noBg,1),2));
 
-Centroid_intensity_estimation_noBg = mean(Centroid_intensity_estimation_noBg);
-Gaussian_intensity_estimation_noBg = mean(Gaussian_intensity_estimation_noBg);
+Centroid_intensity_estimation_noBg = mean(Centroid_intensity_estimation_noBg)
+Gaussian_intensity_estimation_noBg = mean(Gaussian_intensity_estimation_noBg)
 
 maskedImage            = mask.*img;         %the tiny spots within the original image
 img = normalize16(img); maskedImage = normalize16(maskedImage);
@@ -106,10 +102,10 @@ function RW = RW2DKernel(sigma)
 end
 
 function mask = maskFilter(mask,sigma)
-    mask(1:4*sigma,:) = 0;
-    mask(end-4*sigma:end,:) = 0;
-    mask(:,1:4*sigma) = 0;
-    mask(:,end-4*sigma:end) = 0;
+    mask(1:5*sigma,:) = 0;
+    mask(end-5*sigma:end,:) = 0;
+    mask(:,1:5*sigma) = 0;
+    mask(:,end-5*sigma:end) = 0;
     mask = logical(mask);
 end
 
