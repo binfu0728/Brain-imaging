@@ -65,6 +65,7 @@ for i = 1:length(s)
     se = strel('disk',dilatedR);
     tmpt = imdilate(tmpt,se); 
     segments(:,:,i) = tmpt;
+    aggregatePoints(p) = bwconncomp(tmpt).PixelIdxList;
 end
 sigmask = max(segments,[],3);
 
