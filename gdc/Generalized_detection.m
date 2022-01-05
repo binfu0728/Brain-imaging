@@ -11,7 +11,7 @@ time     = 10;  %number of frame, time-scan
 zaxis    = 11;  %number of z-samples
 colour   = 3;   %number of colour channels
 
-img = loadImage(filename,'multi-max',time,zaxis,colour,channel);
+img      = loadImage(filename,'multi-max',time,zaxis,colour,channel);
 
 upsampling        = 4;
 mode              = 'IF';
@@ -40,7 +40,7 @@ BW                = imfill(BW,'holes');
 % %% Post-processing
 BW                = postFiltering(BW,i,intensity_precent,'intensity');
 % BW                = postFiltering(BW,i,area_precent,'area');
-% BW              = postFiltering(BW,img,0,'structural_open',4);
+% BW                = postFiltering(BW,img,0,'structural_open',4);
 
 plotBinaryMask(BW,imgg);
 
