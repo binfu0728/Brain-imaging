@@ -1,6 +1,8 @@
 # LB/LN/Oligomer in brain sample - process and analysis code
 
-## Two version are included in the code. 1st is the std threshold version used in gaussianFit and analysis_beta. 2nd version is gdc version using the new generalized detection code.
+## Two version are included in the code. 1st is the std threshold version used in gaussianFit aggreCount and analysis_beta. 2nd version is gdc version using the new generalized detection code.
+
+***aggreCount***: The old and robust version of aggregation count. Can be applied to any oligomer sample
 
 ***analysis_beta***: code for Ru to do image process and analysis at the same time 
 
