@@ -1,8 +1,11 @@
 # LB/LN/Oligomer in brain sample - process and analysis code
 
 ***aggreCount***: core code of spot detection, test data is available on https://drive.google.com/file/d/1arLmZta4zRyWg_GWi_n65k3Fk8V60mG-/view?usp=sharing  
+
 ***analysis_beta***: code for Ru to do image process and analysis at the same time 
+
 ***gaussianFit***: 2D gaussian fitting for spots (not used in aggreCount and analysis_beta2, which only use centroid fitting for finding position of tiny spots)  
+
 ***Generalized_Detection***: Detection of all wanted objects in an image (LB/LN and oligomers), test data is available on https://drive.google.com/drive/folders/19_O6kN9VP3fTC4ojEN2GLmOfWxAyi7Op?usp=sharing (40x DAB) https://drive.google.com/drive/folders/1yfgqH0mEew9aJCVtZm60o0jNY7s1mvE6?usp=sharing (100X DAB) and https://drive.google.com/drive/folders/1Dee7lvrtHVo-BF1yYEvEsOKVt9doDGJd?usp=sharing (40X IF)
 
 ***- 07/12/21 update***: simpler kernel function with only one input for determining kernel size and the maskfilter function is updated correspounding to kernel size (to eliminate auto-filling artefact during the convolution). Also, the newest intensity estimation with dilated signal mask is implemented
