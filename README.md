@@ -1,6 +1,6 @@
 # LB/LN/Oligomer in brain sample - process and analysis code
 
-***aggreCount***: core code of spot detection, test data is available on https://drive.google.com/file/d/1arLmZta4zRyWg_GWi_n65k3Fk8V60mG-/view?usp=sharing  
+## Two version are included in the code. 1st is the std threshold version used in gaussianFit and analysis_beta. 2nd version is gdc version using the new generalized detection code.
 
 ***analysis_beta***: code for Ru to do image process and analysis at the same time 
 
