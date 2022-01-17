@@ -20,9 +20,5 @@ s.bpass_order       = 0;
 s.intensity_precent = -1;%default -1
 s.area_precent      = -1;%default -1
 s.strelSize         = 5; %default 0
-%%
-clear
-load('config_14_olig_c3.mat');
-s.name = '14_olig_c3';
-s.channel = 3;
+
 save(['config_',s.name,'.mat'],'s')
