@@ -2,9 +2,11 @@
 
 ## Two version are included in the code. 1st is the std threshold version used in gaussianFit aggreCount and analysis_beta. 2nd version is gdc version using the new generalized detection code.
 
-## 17-26 round: c1 - 488nm, c2 - 568nm, c3 - 405nm
-## 10-11 & 14-16 round: c1 - 568nm, c2 - 405nm, c3 - 488nm
-## 12-13 round: c1 - 568nm, c2 - 488nm
+***17-26 round***: c1 - 488nm, c2 - 568nm, c3 - 405nm
+
+***10-11 & 14-16 round***: c1 - 568nm, c2 - 405nm, c3 - 488nm
+
+***12-13 round***: c1 - 568nm, c2 - 488nm
 
 ***aggreCount***: The old and robust version of aggregation count. Can be applied to any oligomer sample
 
