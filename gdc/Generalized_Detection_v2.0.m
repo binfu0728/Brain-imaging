@@ -58,12 +58,12 @@ function img = loadImage(filename,mode,t,z,c,ch)
         case 'single-mean' %for LB/LN
             img = mean(img,3);
         case 'multi-max'  %for LB/LN
-            tmpt = reshape(img,size(img,1),size(img,1),z,t*c);
+            tmpt = reshape(img,size(img,1),size(img,2),z,t*c);
             tmpt = tmpt(:,:,:,ch:c:t*c);
             tmpt = mean(tmpt,4);
             img  = mean(squeeze(max(tmpt,[],3)),3);     
         case 'multi-mean' %for oligomer
-            tmpt = reshape(img,size(img,1),size(img,1),z,t*c);
+            tmpt = reshape(img,size(img,1),size(img,2),z,t*c);
             tmpt = tmpt(:,:,:,ch:c:t*c);
             img  = mean(squeeze(tmpt(:,:,1,:)),3);
         otherwise
