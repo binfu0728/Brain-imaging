@@ -55,14 +55,12 @@ function img = loadImage(filename,mode,t,z,c,ch)
     
     img = double(Tifread([filename,'.tif']));
     switch mode
-        case 'single-mean' %for LB/LN
-            img = mean(img,3);
-        case 'multi-max'  %for LB/LN
+        case 'max'  %for LB/LN
             tmpt = reshape(img,size(img,1),size(img,2),z,t*c);
             tmpt = tmpt(:,:,:,ch:c:t*c);
             tmpt = mean(tmpt,4);
             img  = mean(squeeze(max(tmpt,[],3)),3);     
-        case 'multi-mean' %for oligomer
+        case 'mean' %for oligomer
             tmpt = reshape(img,size(img,1),size(img,2),z,t*c);
             tmpt = tmpt(:,:,:,ch:c:t*c);
             img  = mean(squeeze(tmpt(:,:,1,:)),3);
