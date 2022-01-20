@@ -4,7 +4,7 @@
 clc;clear;addpath('util')
 filename          = '4neurites_2';
 
-load('./gdc_config/config_24_lb_c2.mat')
+load('./config_gdc/config_24_lb_c2.mat')
 img = loadImage(filename,s.imgLoad,s.time,s.zaxis,s.colour,s.channel);
 
 % Pre-processing
