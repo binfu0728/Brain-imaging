@@ -2,10 +2,11 @@
 % Author: Bin Fu, bf341@cam.ac.uk
 %%
 clc;clear;addpath('util')
-filename          = '4neurites_2';
+filename          = '9_1_MMStack_Default.ome';
 
 %% lb/ln analysis
-load('./config_gdc/config_16_lb_c1.mat')
+load('./config_gdc/config_16_lb_c1.mat');
+s.imgLoad = 'mean';
 img = loadImage(filename,s.imgLoad,s.time,s.zaxis,s.colour,s.channel);
 
 % Pre-processing
@@ -43,27 +44,27 @@ omega             = cumsum(p);
 
 idx               = find(omega>0.975);
 t                 = (idx(1) - 1) / (num_bins - 1);
-BW                = imbinarize(i,t);
-BW                = imfill(BW,'holes');
+BW2               = imbinarize(i,t);
+BW2               = imfill(BW2,'holes');
 
 % Post-processing
-BW                = postFiltering(BW,imgg,s.area_precent,'area'); %if dab change to i
-BW                = postFiltering(BW,imgg,s.intensity_precent,'intensity');
-BW                = postFiltering(BW,imgg,0,'structural_open',s.strelSize);
+BW2               = postFiltering(BW2,imgg,s.area_precent,'area'); %if dab change to i
+BW2               = postFiltering(BW2,imgg,s.intensity_precent,'intensity');
+BW2               = postFiltering(BW2,imgg,0,'structural_open',s.strelSize);
 % plotBinaryMask(BW,(imgg));
 
-CC            = bwconncomp(BW);
+CC            = bwconncomp(BW2);
 regions       = CC.PixelIdxList;
 
-masks = cat(3,mask,BW);
+masks = cat(3,BW,BW2);
 [~,~,test] = findCoincidence(masks,[1,2],2,'LB/LN');
 
 idx = find(test>0.3);
 for k = 1:length(idx)
-    BW(regions{idx(k)}) = 0;
+    BW2(regions{idx(k)}) = 0;
 end
 
-plotBinaryMask(BW,imgg);
+plotBinaryMask(BW2,imgg);
 
 % % %% Analysis
 % % CC            = bwconncomp(BW);
