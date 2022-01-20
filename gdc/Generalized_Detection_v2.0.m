@@ -4,7 +4,8 @@
 clc;clear;addpath('util')
 filename          = '4neurites_2';
 
-load('./config_gdc/config_24_lb_c2.mat')
+%% lb/ln analysis
+load('./config_gdc/config_16_lb_c1.mat')
 img = loadImage(filename,s.imgLoad,s.time,s.zaxis,s.colour,s.channel);
 
 % Pre-processing
@@ -25,6 +26,42 @@ BW                = imfill(BW,'holes');
 BW                = postFiltering(BW,imgg,s.intensity_precent,'intensity');
 BW                = postFiltering(BW,imgg,s.area_precent,'area');
 BW                = postFiltering(BW,imgg,0,'structural_open',s.strelSize);
+
+plotBinaryMask(BW,imgg);
+
+%% Oligomer analysis (elimination of large objects), run lb first and then run this block
+load('config_16_olig_c1.mat');
+
+% Pre-processing
+[imgg,i]          = preFiltering(img,s.upsampling,s.gaussian_size,s.bpass_size_l,s.bpass_size_h,s.bpass_order,s.mode);
+
+% Thresholding
+num_bins          = 2^16;
+counts            = imhist(i,num_bins);
+p                 = counts / sum(counts);
+omega             = cumsum(p);
+
+idx               = find(omega>0.975);
+t                 = (idx(1) - 1) / (num_bins - 1);
+BW                = imbinarize(i,t);
+BW                = imfill(BW,'holes');
+
+% Post-processing
+BW                = postFiltering(BW,imgg,s.area_precent,'area'); %if dab change to i
+BW                = postFiltering(BW,imgg,s.intensity_precent,'intensity');
+BW                = postFiltering(BW,imgg,0,'structural_open',s.strelSize);
+% plotBinaryMask(BW,(imgg));
+
+CC            = bwconncomp(BW);
+regions       = CC.PixelIdxList;
+
+masks = cat(3,mask,BW);
+[~,~,test] = findCoincidence(masks,[1,2],2,'LB/LN');
+
+idx = find(test>0.3);
+for k = 1:length(idx)
+    BW(regions{idx(k)}) = 0;
+end
 
 plotBinaryMask(BW,imgg);
 
