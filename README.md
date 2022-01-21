@@ -28,3 +28,5 @@
 ***- 05/01/22 update***: The 1st complete version of generalized detection code, the structure of which has been refactored. The newer version of analysis_beta is uploaded with a newer version of the coincidence check. The new coincidence check method will have a slightly lower rate compared to the previous version. This version is capable of calculating the coincidence for both LB/LN and oligomers 
 
 ***- 17/01/22 update***: GDC has been updated with loading parameters from a config file. The config file writing script is added to gdc folder as well. In the future, please save the used config in the config folder for repeatable analysis
+
+***- 21/01/22 update***: move some functions into util folder, so the gdc code is only a main.m code right now. plotScaleBar.m is added to util for any purposes of plotting a scale bar
