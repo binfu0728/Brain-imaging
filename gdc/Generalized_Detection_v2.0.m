@@ -1,11 +1,8 @@
-% Generalized detection code for IF and DAB images
-% Author: Bin Fu, bf341@cam.ac.uk
-%%
+%% lb/ln analysis
 clc;clear;addpath('util')
 filename          = '9_1_MMStack_Default.ome';
 
-%% lb/ln analysis
-load('./config_gdc/config_16_lb_c1.mat');
+load('config_16_lb_c1.mat');
 s.imgLoad = 'mean';
 img = loadImage(filename,s.imgLoad,s.time,s.zaxis,s.colour,s.channel);
 
@@ -28,7 +25,9 @@ BW                = postFiltering(BW,imgg,s.intensity_precent,'intensity');
 BW                = postFiltering(BW,imgg,s.area_precent,'area');
 BW                = postFiltering(BW,imgg,0,'structural_open',s.strelSize);
 
-plotBinaryMask(BW,imgg);
+f1 = figure; imshow(imgg,[]);
+plotBinaryMask(f1,BW,[0.6350 0.0780 0.1840]);
+plotScaleBar(f1,imgg,0.107/s.upsampling,5);
 
 %% Oligomer analysis (elimination of large objects), run lb first and then run this block
 load('config_16_olig_c1.mat');
@@ -51,7 +50,9 @@ BW2               = imfill(BW2,'holes');
 BW2               = postFiltering(BW2,imgg,s.area_precent,'area'); %if dab change to i
 BW2               = postFiltering(BW2,imgg,s.intensity_precent,'intensity');
 BW2               = postFiltering(BW2,imgg,0,'structural_open',s.strelSize);
-% plotBinaryMask(BW,(imgg));
+% f2 = figure; imshow(imgg,[]);
+% plotBinaryMask(f2,BW2,[0.4940 0.1840 0.5560]);
+% plotScaleBar(f1,imgg,,0.107/s.upsampling,5);
 
 CC            = bwconncomp(BW2);
 regions       = CC.PixelIdxList;
@@ -64,7 +65,9 @@ for k = 1:length(idx)
     BW2(regions{idx(k)}) = 0;
 end
 
-plotBinaryMask(BW2,imgg);
+f3 = figure; imshow(imgg,[]);
+plotBinaryMask(f3,BW2,[0.9290 0.6940 0.1250]);
+plotScaleBar(f3,imgg,,0.107/s.upsampling,5);
 
 % % %% Analysis
 % % CC            = bwconncomp(BW);
