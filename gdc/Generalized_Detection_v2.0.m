@@ -52,7 +52,7 @@ BW2               = postFiltering(BW2,imgg,s.intensity_precent,'intensity');
 BW2               = postFiltering(BW2,imgg,0,'structural_open',s.strelSize);
 % f2 = figure; imshow(imgg,[]);
 % plotBinaryMask(f2,BW2,[0.4940 0.1840 0.5560]);
-% plotScaleBar(f1,imgg,,0.107/s.upsampling,5);
+% plotScaleBar(f1,imgg,0.107/s.upsampling,5);
 
 CC            = bwconncomp(BW2);
 regions       = CC.PixelIdxList;
@@ -67,7 +67,7 @@ end
 
 f3 = figure; imshow(imgg,[]);
 plotBinaryMask(f3,BW2,[0.9290 0.6940 0.1250]);
-plotScaleBar(f3,imgg,,0.107/s.upsampling,5);
+plotScaleBar(f3,imgg,0.107/s.upsampling,5);
 
 % % %% Analysis
 % % CC            = bwconncomp(BW);
