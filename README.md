@@ -30,3 +30,5 @@
 ***- 17/01/22 update***: GDC has been updated with loading parameters from a config file. The config file writing script is added to gdc folder as well. In the future, please save the used config in the config folder for repeatable analysis
 
 ***- 21/01/22 update***: move some functions into util folder, so the gdc code is only a main.m code right now. plotScaleBar.m is added to util for any purposes of plotting a scale bar
+
+***- 02/02/22 update***: configuration file is saved in .json format for a more convenient way to change and load the configuration files. 
