@@ -2,7 +2,7 @@
 clc;clear;addpath('util')
 filename          = '9_1_MMStack_Default.ome';
 
-load('config_16_lb_c1.mat');
+s = loadJSON('config_16_lb_c1.json');
 s.imgLoad = 'mean';
 img = loadImage(filename,s.imgLoad,s.time,s.zaxis,s.colour,s.channel);
 
