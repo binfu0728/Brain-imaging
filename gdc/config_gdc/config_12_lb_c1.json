@@ -1,0 +1,17 @@
+{
+	"name" : "12_lb_c1",
+	"channel" : 1,
+	"time" : 100,
+	"zaxis" : 1,
+	"colour" : 2,
+	"imgLoad" : "max",
+	"upsampling" : 4,
+	"mode" : "IF",
+	"gaussian_size" : 50,
+	"bpass_size_l" : 2,
+	"bpass_size_h" : 50,
+	"bpass_order" : 2,
+	"intensity_precent" : 0.9,
+	"area_precent" : -1,
+	"strelSize" : 0
+}
