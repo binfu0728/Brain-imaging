@@ -19,6 +19,8 @@ s.bpass_size_l      = 0;
 s.bpass_size_h      = 0;
 s.bpass_order       = 0;
 
+s.thres             = 0.975;
+
 s.intensity_precent = -1;%default -1
 s.area_precent      = -1;%default -1
 s.strelSize         = 5; %default 0
