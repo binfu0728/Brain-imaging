@@ -41,7 +41,7 @@ counts            = imhist(i,num_bins);
 p                 = counts / sum(counts);
 omega             = cumsum(p);
 
-idx               = find(omega>0.975);
+idx               = find(omega>s.thres);
 t                 = (idx(1) - 1) / (num_bins - 1);
 BW2               = imbinarize(i,t);
 BW2               = imfill(BW2,'holes');
