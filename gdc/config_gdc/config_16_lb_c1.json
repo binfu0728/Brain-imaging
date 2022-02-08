@@ -4,7 +4,7 @@
 	"time" : 10,
 	"zaxis" : 11,
 	"colour" : 3,
-	"imgLoad" : "max",
+	"imgLoad" : "mean",
 	"upsampling" : 4,
 	"mode" : "IF",
 	"gaussian_size" : 300,
