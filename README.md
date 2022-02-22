@@ -32,3 +32,5 @@
 ***- 21/01/22 update***: move some functions into util folder, so the gdc code is only a main.m code right now. plotScaleBar.m is added to util for any purposes of plotting a scale bar
 
 ***- 02/02/22 update***: configuration file is saved in .json format for a more convenient way to change and load the configuration files. 
+
+***- 22/02/22 update***: configuration file of biscutella that is always used in sample imaging is uploaded
