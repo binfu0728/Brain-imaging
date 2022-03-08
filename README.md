@@ -34,3 +34,5 @@
 ***- 02/02/22 update***: configuration file is saved in .json format for a more convenient way to change and load the configuration files. 
 
 ***- 22/02/22 update***: configuration file of biscutella that is always used in sample imaging is uploaded
+
+***- 08/03/22 update***: configuration file and image loading method have been updated for loading all kinds of images by specifying its hyperstack structure. Also, main.m(gdc_v2_1.m) has been refactored to a cleaner version
