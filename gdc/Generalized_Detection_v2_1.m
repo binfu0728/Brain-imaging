@@ -7,7 +7,7 @@ s = loadJSON('config_16_lb_c1.json');
 img = loadImage(filename,s);
 %img orginal image 512x512
 % Pre-processing
-[imgg,i]          = preFiltering(img,s.upsampling,s.gaussian_size,s.bpass_size_l,s.bpass_size_h,s.bpass_order,s.mode);
+[imgg,i]          = preFiltering(img,s);
 %imgg resampled image 2048x2048
 %i after-prefiltered image
 
