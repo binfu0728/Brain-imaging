@@ -1,4 +1,4 @@
-clc;clear;addpath('util')
+clc;clear;addpath('util');addpath('config_gdc');
 filename = '5neurites_1.tif';
 
 % Load config
