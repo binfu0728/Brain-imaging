@@ -1,4 +1,4 @@
-function [rdensity,distImg] = outDensityCal(cell_mask,outPoints)
+function [rdensity,dr] = outDensityCal(cell_mask,outPoints)
 %input: cell binary mask and out-cell oligomer centroids in real unit(nm)
     cells           = regionprops('table',bwperim(cell_mask,8),'PixelList'); %[x,y]
     % cells         = bwboundaries(cell_mask, 'noholes'); %[y,x]
