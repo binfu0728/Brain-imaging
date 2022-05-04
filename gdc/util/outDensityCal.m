@@ -27,14 +27,14 @@ function [rdensity,dr] = outDensityCal(cell_mask,outPoints)
         distImg(outPoints(n,2),outPoints(n,1)) = dmin(n)*10; %*10 to make sure a clear point, no influence on result
     end
     
-    figure;
-    colormap_custom = flipud(parula(ceil((max(dmin)+1)*10)));
-    SE              = strel('diamond',10);
-    distImg         = imdilate(distImg,SE) + cell_mask;
-    imagesc(label2rgb(round(distImg),colormap_custom,'w'));
-    colormap(colormap_custom);
-    caxis([0 ceil((max(dmin)+1))])
-    colorbar;
-    xticks('');yticks(''); axis image;
+%     figure;
+%     colormap_custom = flipud(parula(ceil((max(dmin)+1)*10)));
+%     SE              = strel('diamond',10);
+%     distImg         = imdilate(distImg,SE) + cell_mask;
+%     imagesc(label2rgb(round(distImg),colormap_custom,'w'));
+%     colormap(colormap_custom);
+%     caxis([0 ceil((max(dmin)+1))])
+%     colorbar;
+%     xticks('');yticks(''); axis image;
 %     xlim([0 55]); ylim([0 55]);
 end
