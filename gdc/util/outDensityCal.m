@@ -1,4 +1,4 @@
-function [rdensity,dr] = outDensityCal(cell_mask,outPoints)
+function dmin = outDensityCal(cell_mask,outPoints)
 %input: cell binary mask and out-cell oligomer centroids in real unit(nm)
     cells           = regionprops('table',bwperim(cell_mask,8),'PixelList'); %[x,y]
     % cells         = bwboundaries(cell_mask, 'noholes'); %[y,x]
@@ -12,13 +12,7 @@ function [rdensity,dr] = outDensityCal(cell_mask,outPoints)
     %     p1 = fliplr(cells{n}); %[x,y]
         [ks(:,n),ds(:,n)] = dsearchn(p1,outPoints);
     end
-    
     [dmin,cmin]     = min(ds,[],2); %cmin means belongs to which cell
-    dr              = linspace(min(dmin),max(dmin)+1,20);
-    rdensity        = zeros(length(dr)-1,1);
-    for r = 1:length(dr)-1
-        rdensity(r) = length(find(dmin >= dr(r) & dmin < dr(r+1)));
-    end
     
     distImg         = zeros(size(cell_mask));
     outPoints       = round(outPoints/0.107*4);
