@@ -31,3 +31,5 @@
 ***- 08/03/22 update***: configuration file and image loading method have been updated for loading all kinds of images by specifying its hyperstack structure. Also, main.m(gdc_v2_1.m) has been refactored to a cleaner version
 
 ***- 03/05/22 update***: In-cell/Out-cell density calculation is uploaded and the detailed out-cell density calculation as well. All versions for oligomer detection except gdc is moved into old branch
+
+***- 06/05/22 update***: Spatial analysis function is uploaded and util folder is changed into lib folder and functions are rearranged into diffferent subfolders
