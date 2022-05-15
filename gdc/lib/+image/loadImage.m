@@ -1,7 +1,7 @@
 function img = loadImage(filename,s) 
 % input type : none
 % output type: double
-    img = double(Tifread(filename));
+    img = double(load.Tifread(filename));
 
     width   = s.width;
     height  = s.height;
