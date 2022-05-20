@@ -33,3 +33,5 @@
 ***- 03/05/22 update***: In-cell/Out-cell density calculation is uploaded and the detailed out-cell density calculation as well. All versions for oligomer detection except gdc is moved into old branch
 
 ***- 06/05/22 update***: Spatial analysis function is uploaded and util folder is changed into lib folder and functions are rearranged into diffferent subfolders
+
+***- 20/05/22 update***: gif image write is uploaded to gdc->lib->+load
