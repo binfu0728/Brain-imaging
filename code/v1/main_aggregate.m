@@ -1,5 +1,5 @@
 clc;clear;addpath(genpath('D:\code\'));
-
+% for small and large aggregtes (if no super big aggregates in FoV, can use main_oligomer directly)
 s1                 = load.loadJSON('config_lb_biscut.json');
 s2                 = load.loadJSON('config_oligomer_biscut.json');
 metadata           = readtable('pilot_metadata.csv','VariableNamingRule','preserve');
