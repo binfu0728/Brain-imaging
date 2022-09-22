@@ -35,3 +35,5 @@
 ***- 06/05/22 update***: Spatial analysis function is uploaded and util folder is changed into lib folder and functions are rearranged into diffferent subfolders
 
 ***- 20/05/22 update***: gif image write is uploaded to gdc->lib->+load
+
+***- 22/09/22 update***: The formal v1.0 is uploaded. It can detect both small and large aggregates and also some type of cells. The preset configurations for some types are uploaded as well 
