@@ -27,7 +27,7 @@ for i = 1%:length(filenames)
         zimg     = double(imresize(img(:,:,j),4));
         BW       = process.oligomerDetection(zimg,s);
 %         f        = visual.plotAll(zimg,BW,[0.9290 0.6940 0.1250]);
-        [result_z,result_avg] = process.findInfo(BW,zimg,initz,j);
+        [result_z,result_avg] = image.findInfo(BW,zimg,initz,j);
         result_z_all = [result_z_all;result_z];
         result_t     = [result_t;result_avg];
     end
