@@ -17,14 +17,14 @@ for i = 1%:length(names)
     img = img(:,:,zi:zf,channel);
     [smallM,largeM] = process.aggregateDetection(img,s1,s2,zi,0); %aggregate, large and small
 %     cellM           = process.cellDetection(img,s); %cell
-%    smallM          = zeros(2048,2048,size(img,3)); %oligomer, only small
-%    for j = 1:size(img,3)
-%        zimg          = double(imresize(img(:,:,j),4));
-%        smallM(:,:,j) = process.oligomerDetection(zimg,s);
-%    end
+%     smallM          = zeros(2048,2048,size(img,3)); %oligomer, only small
+%     for j = 1:size(img,3)
+%         zimg          = double(imresize(img(:,:,j),4));
+%         smallM(:,:,j) = process.oligomerDetection(zimg,s);
+%     end
 
     for j = 1:size(img,3)
-        %aggregate
+        %aggregate / oligomer
         f    = visual.plotAll(imresize(img(:,:,j),4),largeM(:,:,j),[0.6350 0.0780 0.1840],'contrast'); %comment this line if oligomer is used
                visual.plotBinaryMask(f,smallM(:,:,j),[0.8500 0.3250 0.0980]);
         pause(0.25);
