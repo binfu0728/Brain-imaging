@@ -1,10 +1,6 @@
-# LB/LN/Oligomer in brain sample - process and analysis code
+# Brain sample imaging processing code
 
-***17-26 round***: c1 - 488nm, c2 - 568nm, c3 - 405nm
-
-***10-11 & 14-16 round***: c1 - 568nm, c2 - 405nm, c3 - 488nm
-
-***12-13 round***: c1 - 568nm, c2 - 488nm
+***code***: The formal version of the detection and analysis code
 
 ***gaussianFit***: 2D gaussian fitting for spots
 
@@ -35,3 +31,9 @@
 ***- 20/05/22 update***: gif image write is uploaded to gdc->lib->+load
 
 ***- 22/09/22 update***: The formal v1.0 is uploaded. It can detect both small and large aggregates and also some type of cells. The preset configurations for some types are uploaded as well 
+
+***17-26 round***: c1 - 488nm, c2 - 568nm, c3 - 405nm
+
+***10-11 & 14-16 round***: c1 - 568nm, c2 - 405nm, c3 - 488nm
+
+***12-13 round***: c1 - 568nm, c2 - 488nm
