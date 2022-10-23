@@ -1,0 +1,19 @@
+{
+	"channel" : 1,
+	"width" : 1200,
+	"height" : 1200,
+	"frames" : 1,
+	"slices" : 17,
+	"colour" : 1,
+	"hyper" : "xytcz",
+	"k1_dog" : 4,
+	"k2_dog" : 40,
+	"k_log" : 0,
+	"dim" : 2,
+	"thres_method" : "otsu",
+	"ostu_num" : 1,
+	"percent" : 0,
+	"area" : 20,
+	"intens_ratio" : 1.2,
+	"disk" : 0
+}

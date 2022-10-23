@@ -1,0 +1,23 @@
+{
+	"channel" : 2,
+	"width" : 512,
+	"height" : 512,
+	"frames" : 10,
+	"slices" : 17,
+	"colour" : 2,
+	"hyper" : "xytcz",
+	"k1_dog" : 0,
+	"k2_dog" : 20,
+	"k_log" : 
+	[
+		4,
+		4
+	],
+	"dim" : 2,
+	"thres_method" : "percentage",
+	"ostu_num" : 0,
+	"percent" : 0.975,
+	"area" : 0,
+	"intens_ratio" : 0,
+	"disk" : 5
+}
