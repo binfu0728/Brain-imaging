@@ -4,7 +4,7 @@ function BW = threshold(img,s)
 %          
 % output : BW, binark mask after thresholding
 
-    method = s.thres_method;
+    method = s.thres_method; %percentage or ostu
     switch method
         case 'otsu'
             level = multithresh(img,s.ostu_num);

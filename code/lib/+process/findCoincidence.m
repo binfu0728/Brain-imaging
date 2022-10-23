@@ -9,7 +9,7 @@ function [BW,rate] = findCoincidence(BW1,BW2,ref)
     m1 = cat(3,BW1,BW2);
     BW = m1(:,:,ref);
 
-    if sum(BW1,'all') ~= 0 && sum(BW2,'all') ~= 0
+    if sum(BW1,'all') ~= 0 && sum(BW2,'all') ~= 0 %if there is at least one object in each channel
         [rate,test] = analyze.coincidence(m1,ref);
         regions     = bwconncomp(BW).PixelIdxList;
         if ~isempty(regions)

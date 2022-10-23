@@ -1,25 +1,19 @@
 clc;clear;addpath(genpath('D:\code\'));
 
-s                  = load.loadJSON('config_microglia_biscut.json');
-metadata           = readtable('pilot_metadata.csv','VariableNamingRule','preserve');
+s = load.loadJSON('config_microglia_biscut.json');
+[filenames,filepath,z,rsid] = load.loadMeta('pilot_metadata.csv');
 
-filenames          = metadata.filenames;
-[filepath,names,~] = fileparts(filenames);
-filepath           = cellfun(@(x) load.extractPath(x,3),strcat(filepath,{'\'},names),'UniformOutput',false);
-z                  = [metadata.zi,metadata.zf];
-rsid               = metadata.rsid;
+rr        = {3,8}; %microglia
+ss        = {{7 8 9 10 11 12},{1 2 3 4 5 6}};
+name      = 'microglia';
 
-rr                 = {3,8}; %microglia
-ss                 = {{7 8 9 10 11 12},{1 2 3 4 5 6}};
-name               = 'microglia';
+ids       = load.cell2rsid(rr,ss);
+idxx      = logical(sum(rsid == ids,2));
 
-ids                = load.cell2rsid(rr,ss);
-idxx               = logical(sum(rsid == ids,2));
-
-filenames          = filenames(idxx); 
-filepath           = filepath(idxx);
-z                  = z(idxx,:); 
-rsid               = rsid(idxx);
+filenames = filenames(idxx); 
+filepath  = filepath(idxx);
+z         = z(idxx,:); 
+rsid      = rsid(idxx);
 
 %%
 saved = 1;

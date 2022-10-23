@@ -6,18 +6,18 @@ function num_z = numberAnalysis(lists,BWs,z,s)
 %          
 % output : num_z, number per slice for small and large aggregates
 
-    num_z = zeros(1,length(lists)+length(BWs)) - 1; %small,large
+    num_z = zeros(1,length(lists)+length(BWs)) - 1; %lists are for the small, BWs are for the large, -1 for making the smallest number starting from zero
     for i = 1:length(lists)
         tmpt = lists{i};
-        num_z(i)  = size(tmpt(tmpt(:,end)==z),1);
+        num_z(i)  = size(tmpt(tmpt(:,end)==z),1); %count the numbers at a specific slice (z)
     end
 
-    if ~isempty(BWs)
+    if ~isempty(BWs) %if large aggregates will be analyzed
         for i = 1:length(BWs)
-            if sum(BWs{i},'all') ~= 0
+            if sum(BWs{i},'all') ~= 0 %if there is a large aggregate in the fov
                 tmpt = BWs{i};
-                tmpt = load.boundary2BW(tmpt(tmpt(:,end)==z,1:2),s,1);
-                num_z(i+length(lists)) = length(bwconncomp(tmpt).PixelIdxList);
+                tmpt = load.boundary2BW(tmpt(tmpt(:,end)==z,1:2),s,1); %load the spreadsheet at a specific slice (z) to a binary mask
+                num_z(i+length(lists)) = length(bwconncomp(tmpt).PixelIdxList); %count the numbers at a specific slice (z)
             else
                 num_z(i+length(lists)) = 0;
             end

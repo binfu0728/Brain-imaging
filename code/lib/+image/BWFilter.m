@@ -9,9 +9,9 @@ function BW = BWFilter(BW,img,s)
     area   = ss.Area;
     intens = ss.MeanIntensity;
     switch length(s.area)
-        case 1
+        case 1 %area and intensity post-filtering
             idx = union(find(area<s.area),find(intens<s.intens));
-        case 2
+        case 2 %area and intensity post-filtering
             idx = union(find(area<s.area(1) | area>s.area(2)),find(intens<s.intens));
         otherwise
             error('area size not supported');

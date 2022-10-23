@@ -14,22 +14,22 @@ function [fov,inCell,outCell,percentage,outPoints,inout] = calcDensity(cell_mask
         width = 2048;
     end
 
-    [~,numCell]     = bwlabel(cell_mask);
-    oligPoints(:,2) = abs(oligPoints(:,2)-width);
-    oligPoints      = oligPoints/4*0.107;
+    [~,numCell]     = bwlabel(cell_mask); %number of cells per fov
+    oligPoints(:,2) = abs(oligPoints(:,2)-width); %change to normal cartisian coordinate
+    oligPoints      = oligPoints/4*0.107; %change from pixel unit to um
     
     boundaries  = bwboundaries(cell_mask, 'noholes');
-    inout       = false(size(oligPoints,1),1);
+    inout       = false(size(oligPoints,1),1); %repo for all points to indicate whether it is inside or outside the cell
 
     if plot == 1
         f = figure;
     end
 
-    for k = 1:numCell
+    for k = 1:numCell %find whether points inside or outside through each cell
         cellb      = boundaries{k};
         cellb(:,1) = abs(cellb(:,1)-width); %[y,x]
-        cellb      = cellb/4*0.107;
-        s          = inpolygon(oligPoints(:,1),oligPoints(:,2),cellb(:,2),cellb(:,1));
+        cellb      = cellb/4*0.107; %change from pixel unit to um
+        s          = inpolygon(oligPoints(:,1),oligPoints(:,2),cellb(:,2),cellb(:,1)); %inside or outside core function
         inout      = inout | s;
 
         if plot == 1 
@@ -46,12 +46,12 @@ function [fov,inCell,outCell,percentage,outPoints,inout] = calcDensity(cell_mask
         xlim([0 55]); ylim([0 55]);
     end
 
-    fov = size(oligPoints,1) / (0.107*width/4)^2;
+    fov = size(oligPoints,1) / (0.107*width/4)^2; %fov density
     if numCell ~= 0
         inCell = size(inPoints,1) / (sum(cell_mask,'all') / 16 * (0.107^2));
     else
         inCell = 0;
     end
-    outCell = size(outPoints,1) / ((width*width-sum(cell_mask,'all')) / 16 * (0.107^2));
-    percentage = sum(cell_mask,'all')/(width*width);
+    outCell = size(outPoints,1) / ((width*width-sum(cell_mask,'all')) / 16 * (0.107^2)); %outside cell density
+    percentage = sum(cell_mask,'all')/(width*width); %how much area occupied by the cells
 end

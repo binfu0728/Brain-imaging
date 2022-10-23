@@ -10,6 +10,6 @@ function [inten_z,inten_i] = intensityAnalysis(lists,z)
     for i = 1:length(lists)
         tmpt       = lists{i};
         inten_z(i) = mean(tmpt(tmpt(:,end)==z,5),1); %5th col is the intensity
-        inten_i{i} = [inten_i{i};tmpt(tmpt(:,end)==z,5)];
+        inten_i{i} = [inten_i{i};tmpt(tmpt(:,end)==z,5)]; %concat intensities into a long format
     end
 end

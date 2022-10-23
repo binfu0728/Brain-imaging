@@ -1,5 +1,10 @@
 function BW = cellDetection(img,s)
 % detect cells in a FoV, similar to LB Detection 3D
+% input  : img, 3D raw image
+%          s, config
+% 
+% output : BW, binary mask of the image for oligomers
+
     img1 = image.multiDoG(img,s);
     img1 = max(img1,0);
     BW   = image.threshold(img1,s);

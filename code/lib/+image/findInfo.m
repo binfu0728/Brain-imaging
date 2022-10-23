@@ -1,35 +1,35 @@
-function [result_z,result_avg,BW] = findInfo(BW,zimg,z,j)
+function [result_oligomer,result_slice,BW] = findInfo(BW,zimg,z,j)
 % input  : BW, binary mask
 %          zimg, the processed image stack
 %          z, the procesed slice, zi and zf
 %          j, the current loop number
 % 
-% output : result_z, result per oligomer
-%          result_avg, result per slice
+% output : result_oligomer, result per oligomer
+%          result_slice, result per slice
 
-    result_avg         = zeros(1,3);
-%     [aps,BW]           = image.BWdilation(BW);
-    [sigImage,bgImage] = image.extractBg(BW,zimg);
-    result_z           = regionprops('table',BW,sigImage,'centroid','MeanIntensity','Area');
+    result_slice         = zeros(1,3); %result per slice, averaged number, averaged mean intensity, averaged sum intensity
+%     [aps,BW]            = image.BWdilation(BW);
+    [sigImage,bgImage]   = image.extractBg(BW,zimg); %pure signal and pure background
+    result_oligomer      = regionprops('table',BW,sigImage,'centroid','MeanIntensity','Area');
 
-    if ~isempty(result_z)
-        sumintensity   = 2.5*result_z.MeanIntensity.*result_z.Area; %2.5 from gaussian calibration
-%         sumintensity = zeros(size(result_z,1),1);
+    if ~isempty(result_oligomer) %if there is at least one oligomer in the FoV
+        sumintensity   = 2.5*result_oligomer.MeanIntensity.*result_oligomer.Area; %total intensity per oligomer in long format, 2.5x from calibration between gaussian and flood fill intensity finding calibration
+%         sumintensity = zeros(size(result_oligomer,1),1); %use the real mask dilation result, not from calibration ratio
 %         for k = 1:size(result_z,1)
 %             sumintensity(k) = sum(sigImage(aps{k}));
 %         end
-        tmpt = array2table([sumintensity,repmat(z+j-1,size(result_z,1),1)],'VariableNames', {'SumIntensity','z'});
-        result_z       = [result_z,tmpt];
+        tmpt = array2table([sumintensity,repmat(z+j-1,size(result_oligomer,1),1)],'VariableNames', {'SumIntensity','z'}); % add extra columns to the table
+        result_oligomer       = [result_oligomer,tmpt]; %concat data into the long format
 %         result_z.Area  = result_z.Area/16*(0.107^2);
-        result_avg(1)  = length(result_z.Centroid);
-        result_avg(2)  = mean(result_z.SumIntensity); 
-        result_avg(3)  = median(bgImage,'all');
+        result_slice(1)  = length(result_oligomer.Centroid);
+        result_slice(2)  = mean(result_oligomer.SumIntensity); 
+        result_slice(3)  = median(bgImage,'all');
     else
-        result_z       = array2table([0 0 0 0 0 z+j-1]);
-        result_z       = mergevars(result_z,[2,3]);
-        result_z       = renamevars(result_z,1:5,{'Area','Centroid','MeanIntensity','SumIntensity','z'});
-        result_avg(1)  = 0;
-        result_avg(2)  = 0; 
-        result_avg(3)  = median(bgImage,'all');
+        result_oligomer  = array2table([0 0 0 0 0 z+j-1]);
+        result_oligomer  = mergevars(result_oligomer,[2,3]);
+        result_oligomer  = renamevars(result_oligomer,1:5,{'Area','Centroid','MeanIntensity','SumIntensity','z'});
+        result_slice(1)  = 0;
+        result_slice(2)  = 0; 
+        result_slice(3)  = median(bgImage,'all');
     end
 end

@@ -5,12 +5,12 @@ function [img, bg] = bgRemoving(img, scale)
 %          
 % output : img, substracted image
 %          bg, estimated background (single number)
-    si            = 25;
+    si            = 25; %the region size to find the pure background region
     img           = double(img);
     [nY,nX,nImgs] = size(img);
-    edgeMap       = zeros(nY,nX);
+    edgeMap       = zeros(nY,nX); %record the variation of img
 
-    for m = 1:nImgs
+    for m = 1:nImgs 
         edgeMap = edgeMap + double(img(:,:,m))./mean2(img(:,:,m));
     end
     bgReg = zeros(floor(nY/si),floor(nX/si));

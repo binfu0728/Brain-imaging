@@ -10,5 +10,5 @@ function img = multiLoG(img,s)
         error('wrong dimension');
     end
     h   = image.rickerWavelet(sigma);
-    img = imfilter(img,h,'replicate','conv','same');  
+    img = imfilter(img,h,'replicate','conv','same'); %multi-dimensional Laplacian of Gaussian filtering
 end
