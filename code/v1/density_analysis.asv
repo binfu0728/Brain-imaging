@@ -67,7 +67,7 @@ end
 
 %%
 T1 = array2table(cells,"VariableNames",{'fov','incell','outcell','occupied-percent','rsid'});
-writetable(T1,['density_561_slice_',name,'_all.csv']); %density for large aggregates and oligomers
+writetable(T1,['density_561_slice_',name,'_all.csv']); %density for large aggre
 
 % T2 = array2table(oligs,"VariableNames",{'area','x','y','mean-intensity','sum-intensity','z','inout','rsid'});
-% writetable(T2,['density_561_oligomer_',name,'_small.csv']); %oligomer result with its inside/outside info
+% writetable(T2,['density_561_oligomer_',name,'_small.csv']);

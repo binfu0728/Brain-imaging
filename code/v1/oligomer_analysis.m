@@ -3,12 +3,7 @@ clc;clear;addpath(genpath('D:\code\'));
 s                 = load.loadJSON('config_oligomer_biscut.json');
 metadata          = readtable('psyn_metadata.csv','VariableNamingRule','preserve');
 prefix            = 'psyn_result\';
-
-filenames         = metadata.filenames;
-[filepath,name,~] = fileparts(filenames);
-filepath          = cellfun(@(x) load.extractPath(x,3),strcat(filepath,{'\'},name),'UniformOutput',false);
-z                 = [metadata.zi,metadata.zf];
-rsid              = metadata.rsid;
+[filenames,filepath,z,rsid] = load.loadMeta('psyn_metadata.csv');
 
 %%
 ref      = [repmat(2,sum(rsid == 1.01 | rsid == 1.02),1);repmat(1,sum(rsid == 1.03 | rsid == 1.04 | rsid == 1.05),1);repmat(2,sum(rsid == 1.06),1)]; %mouse
@@ -16,13 +11,13 @@ ref      = [repmat(2,sum(rsid == 1.01 | rsid == 1.02),1);repmat(1,sum(rsid == 1.
 s.width  = 2048;
 s.height = 2048;
 
-nums_s   = [zeros(length(rsid),4),rsid]; %per sample
-nums_z   = []; %per slice
-inten_s  = [zeros(length(rsid),2),rsid]; %per sample
-inten_z  = []; %per slice
-inten_i  = {}; %per oligomer
+nums_s   = [zeros(length(rsid),4),rsid]; %number per sample
+nums_z   = []; %number per slice
+inten_s  = [zeros(length(rsid),2),rsid]; %intensity per sample
+inten_z  = []; %intensity per slice
+inten_i  = {}; %intensity per oligomer
 inten_t  = []; %tmpt holder
-coloc_s  = [zeros(length(rsid),4),rsid];
+coloc_s  = [zeros(length(rsid),4),rsid]; %coloc_large,chance_large,coloc_small,chance_small,rsid 
 
 for i = 1:length(rsid)
     if i < 28
@@ -35,10 +30,10 @@ for i = 1:length(rsid)
     c5611 = readmatrix(filenames{idx{3}}); %large
     c5612 = readmatrix(filenames{idx{4}});
 
-    lists = {c4882,c5612};
-    BWs   = {c4881,c5611};
+    smalls = {c4882,c5612};
+    larges = {c4881,c5611};
 
-    [nums,inten,inten_all,coloc_z] = process.generalAnalysis(lists,BWs,z(i,:),rsid(i),ref(i));
+    [nums,inten,inten_all,coloc_z] = process.generalAnalysis(smalls,larges,z(i,:),rsid(i),ref(i));
     nums_z          = [nums_z;nums];
     nums_s(i,1:4)   = mean(nums_z(:,1:4),1);
     inten_z         = [inten_z;inten];
