@@ -11,7 +11,7 @@ function num_z = numberAnalysis(lists,BWs,z,s)
         tmpt = lists{i};
         num_z(i)  = size(tmpt(tmpt(:,end)==z),1); %count the numbers at a specific slice (z)
     end
-
+    
     if ~isempty(BWs) %if large aggregates will be analyzed
         for i = 1:length(BWs)
             if sum(BWs{i},'all') ~= 0 %if there is a large aggregate in the fov

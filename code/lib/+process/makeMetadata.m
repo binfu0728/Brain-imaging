@@ -1,9 +1,10 @@
-function T = makeMetadata(filedir)
+function [T,foldername] = makeMetadata(filedir)
 % input  : fildir, the mian folder where the data is saved
 % 
 % output : T, the metadata table
 
 % folder structure: name->round->sample->image
+    if filedir(end) ~= '\'; filedir = [filedir,'\'];end
     files     = dir([filedir,'\**\*.tif']);
     names     = {files.name}';
     folders   = {files.folder}';
@@ -19,7 +20,7 @@ function T = makeMetadata(filedir)
     for i = 1:length(files)
         tmpt = filenames{i};
         idx  = strfind(tmpt,'\');
-        samples{i}  = tmpt(idx(num_slash+2)+1:idx(num_slash+3)-1);
+        samples{i}  = tmpt(idx(num_slash+1)+1:idx(num_slash+2)-1);
         s           = regexp(samples{i},'\d*','Match'); %extract the number in the sample name
         s           = str2num(s{1});
         rsid{i}     = str2num(rsid{i}) + 0.01*s; %assign rsid based on the sample
