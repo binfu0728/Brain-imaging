@@ -115,7 +115,7 @@ run_preprocessing_button = uicontrol('parent',Preprocessing_panel,'style','pushb
 %% SECTION 4: ANALYSIS
 uicontrol('parent',Analysis_panel,'style','text','position', [.00  .95 1.0 .05],'string','Metadata location');     
 find_backslash = strfind(selection_preprocessing_folder.String,'\');
-filepath_metadata = [selection_preprocessing_folder.String(1:find_backslash(end-1)),'metadata.csv'];
+filepath_metadata = [selection_preprocessing_folder.String(1:find_backslash(end)-1),'_metadata.csv'];
 % path of the metadata
 selection_metadata_file = uicontrol('parent',Analysis_panel,'style','togglebutton','position', [.00  .9 1.0 .05],'string',filepath_metadata,'Value',0,'callback',{@Directory_select,'Metadata_file'}); %value 0 and 1 only changes the block colour     
 
@@ -134,16 +134,23 @@ settings.save_cell_table = uicontrol('parent',Analysis_panel,'style','checkbox',
 
 run_analysis_button = uicontrol('parent',Analysis_panel,'style','pushbutton','position', [.00 .00 1 .05],'string','analyse data','callback',{@ANALYSE_DATA}); %#ok<NASGU> 
 
-%% SECTION 5: VISUALIZATION
-uicontrol('parent',Plotting_panel,'style','text','position', [.00  .95 1.0 .05],'string','Aggregate data');     
-uicontrol('parent',Plotting_panel,'style','text','position', [.00  .90 1.0 .05],'string','Select path');     
-uicontrol('parent',Plotting_panel,'style','text','position', [.00  .85 1.0 .05],'string','choose name');     
+%% SECTION 5: VISUALIZATION and CHANGE FORMAT
 
-% Selection based on disease / healthy 
-% Label
-% antibody
-% Metadata in the analyzed folder
-% And long table with the information about RSID and the associated info.
+uicontrol('parent',Plotting_panel,'style','text','position', [.00  .95 1.0 .05],'string','Result location');     
+find_backslash    = strfind(selection_preprocessing_folder.String,'\');
+filepath_metadata = [selection_preprocessing_folder.String(1:find_backslash(end)-1),'_result'];
+% path of the result folder
+selection_result_folder = uicontrol('parent',Plotting_panel,'style','togglebutton','position', [.00  .9 1.0 .05],'string',filepath_metadata,'Value',0,'callback',{@Directory_select,'Result_folder'}); %value 0 and 1 only changes the block colour 
+
+% visualize (unfinish)
+uicontrol('parent',Plotting_panel,'style','text','position', [.00  .8 1.0 .05],'string','visualize');
+
+% Type of output result
+uicontrol('parent',Plotting_panel,'style','text','position', [.00  .45 1.0 .05],'string','Result data');
+settings.aggre_number = uicontrol('parent',Plotting_panel,'style','checkbox','position', [.00  .40 1.0 .05],'string','Aggregate number','Value',1); 
+settings.small_intens = uicontrol('parent',Plotting_panel,'style','checkbox','position', [.00  .35 1.0 .05],'string','Small aggregate intensity','Value',1); 
+
+run_format_button = uicontrol('parent',Plotting_panel,'style','pushbutton','position', [.00 .00 1 .05],'string','output long format','callback',{@FORMAT_DATA}); 
 
 %% SECTION 6: FUNCTIONS
 function Directory_select(~,~,input)
@@ -169,7 +176,13 @@ function Directory_select(~,~,input)
                 [file, filepath] = uigetfile([defaults_imagedata_path,'*.*']);
                 if filepath(end)~='\'; filepath = [filepath,'\']; end
                 selection_metadata_file.String = [filepath, file];
-                selection_preprocessing_folder.Value = 1;
+                selection_metadata_file.Value = 1;
+            case 'Result_folder'
+                filepath = uigetdir(defaults_imagedata_path);
+                if filepath(end)~='\'; filepath = [filepath,'\']; end
+                selection_result_folder.String = filepath;
+                selection_result_folder.Value = 1;
+
         end
     catch
         if (numel(filepath)<=2)
@@ -208,10 +221,10 @@ end
 function slice_selection_method(~,~)
     if settings.analysis_group.Children(2).Value %if this is selected (.value==1)
         settings.firstframe.Style = 'text';
-        settings.lastframe.Style = 'text';
+        settings.lastframe.Style  = 'text';
     elseif settings.analysis_group.Children(1).Value %two children is added in the following lines
         settings.firstframe.Style = 'edit';
-        settings.lastframe.Style = 'edit';
+        settings.lastframe.Style  = 'edit';
     end
 end
 
@@ -222,7 +235,7 @@ function PREPROCESS_DATA(~,~)
     status_title.BackgroundColor = [1 .5 .5];
 %     drawnow;
 
-    % Magic is done here.
+    % Based on main_dataload
     filedir   = selection_preprocessing_folder.String;
     T         = makeMetadata(filedir);
     filenames = T.filenames;
@@ -287,7 +300,7 @@ function ANALYSE_DATA(~,~)
     status_title.BackgroundColor = [1 .5 .5];
 %     drawnow;
 
-%   Based on Main_quick
+%   Based on main_cell & main_aggregate
     try
         [filenames,filepath,zs,rsid] = loadMeta(selection_metadata_file.String);
     catch
@@ -301,8 +314,8 @@ function ANALYSE_DATA(~,~)
     s1 = loadJSON(selection_configuration_lb.String{selection_configuration_lb.Value}); %lb
     s2 = loadJSON(selection_configuration_ol.String{selection_configuration_ol.Value}); %oligomer
     s  = loadJSON(selection_configuration_cell.String{selection_configuration_cell.Value}); %cell
-    f = waitbar(0,'Segmenting data...');
-    for i = 1:10%:length(filenames)
+    f  = waitbar(0,'Segmenting data...');
+    for i = 1:length(filenames)
         waitbar(i/numel(filenames),f,'Segmenting data.');
         img_original = Tifread(filenames{i});
         img_original = reshape(img_original,[s1.height,s1.width,s1.slices,s1.colour]);
@@ -339,13 +352,64 @@ function ANALYSE_DATA(~,~)
             end
             if settings.cell_analysis.Value && settings.save_cell_table.Value
                 boundaries = array2table(load.BW2boundary(cellM,zs(i,1)),'VariableNames',{'row','col','z'});
-                writetable(boundaries,fullfile(newFolder,['cell_result.csv']))
+                writetable(boundaries,fullfile(newFolder,'cell_result.csv'))
             end
         end
     end
     close(f);
-
     status_title.String = 'Finished processing data';
     status_title.BackgroundColor = [.5 1 .5];
 end
+
+function  FORMAT_DATA(~,~)
+    status_title.String = 'Processing result';
+    status_title.BackgroundColor = [1 .5 .5];
+
+%   Based on oligomer_analysis
+    filedir = selection_preprocessing_folder.String;
+    [~,filepath,zs,rsid] = loadMeta(selection_metadata_file.String);
+    s = loadJSON(selection_configuration_ol.String{selection_configuration_ol.Value}); %oligomer
+    s.width = s.width*4; s.height = s.height*4;
+
+    nums_z   = []; %number per slice
+    inten_i  = {}; %intensity per oligomer
+    inten_t  = []; %tmpt holder
+    f        = waitbar(0,'Formatting result...');
+    for i = 1:length(rsid)
+        waitbar(i/numel(rsid),f,'Formatting result.');
+        [idx,filenames] = load.extractName([selection_result_folder.String,'\',filepath{i}],{'large_aggregates','small_aggregates'});     
+        large  = readmatrix(filenames{idx{1}}); %large
+        small  = readmatrix(filenames{idx{2}}); %small
+    
+        smalls = {small};
+        larges = {large};
+    
+        [nums,~,inten_all] = process.generalAnalysis(smalls,larges,zs(i,:),rsid(i),[],s);
+        nums_z  = [nums_z;nums];
+        inten_t = [inten_t;inten_all];
+    end
+    close(f);
+
+    for i = 1:size(inten_t,2)
+        inten_i{i} = vertcat(inten_t{:,i});
+    end
+
+    num_slash = strfind(filedir,'\');
+    prefix    = filedir(num_slash(end-1)+1:num_slash(end)-1);
+    filename_metadata = [filedir(1:num_slash(end-1)),prefix,'_metadata.csv'];
+    
+    if settings.aggre_number.Value
+        T1 = array2table(nums_z,"VariableNames",{'small_nums','large_nums','rsid'});
+        writetable(T1,[filedir(1:num_slash(end-1)),prefix,'_numbers_slice.csv']);
+    end
+
+    if settings.small_intens.Value
+        T2 = array2table(cell2mat(inten_i),"VariableNames",{'sum_intensity','rsid'});
+        writetable(T2,[filedir(1:num_slash(end-1)),prefix,'_intensity_oligomer.csv']);
+    end
+
+    status_title.String = 'Finished formating result';
+    status_title.BackgroundColor = [.5 1 .5];
+end
+
 end
