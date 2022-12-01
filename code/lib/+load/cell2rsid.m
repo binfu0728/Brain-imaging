@@ -6,6 +6,7 @@ function ids = cell2rsid(rr,ss)
 
     ids = [];
     for i = 1:length(rr)
+%         ids = [ids,rr{i} + 0.01.*[ss{i}{:}]];
         ids = [ids,rr{i} + 0.01.*[ss{i}{:}]];
     end
 end

@@ -1,4 +1,5 @@
 {
+	"name" : "aggregate",
 	"channel" : 2,
 	"width" : 512,
 	"height" : 512,

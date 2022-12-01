@@ -24,7 +24,7 @@ function [nums_z,inten_z,inten_i,coloc_z] = generalAnalysis(smalls,larges,z,rsid
     coloc_z = zeros(length(z(1):z(2)),5); %coloc_large,chance_large,coloc_small,chance_small,rsid
 
     for j = 1:length(z(1):z(2))
-        nums_z(j,1:length(smalls)+length(larges))     = analyze.numberAnalysis(smalls,larges,z(1)+j-1,s);
+        nums_z(j,1:length(smalls)+length(larges))  = analyze.numberAnalysis(smalls,larges,z(1)+j-1,s);
         [inten_z(j,1:length(smalls)),inten_t(j,:)] = analyze.intensityAnalysis(smalls,z(1)+j-1); 
         if ~isempty(ref) %if coincidence check is used
             small1           = smalls{1}; small1 = load.centroid2BW(round(small1(small1(:,end)==z(1)+j-1,2:3)),s); %convert oligomer result (centroid) into binart mask (nxn, defined by config)
