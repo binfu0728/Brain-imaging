@@ -23,6 +23,7 @@ function [smallM,largeM,result_oligomer,result_slice] = aggregateDetection(img,s
     for j = 1:size(img,3)
         zimg     = double(imresize(img(:,:,j),4));
         BW2      = process.oligomerDetection(zimg,s2); %detect small objects in the FoV (not the oligomers)
+        % add pixelidx dilation
         BW2      = BW2 - process.findCoincidence(imresize(BW1(:,:,j),4),BW2,2); %get rid of the overlapping region between BW1 and BW2s
 
         BW       = imresize(BW1(:,:,j),4) | BW2; %BW1 + BW2
