@@ -7,7 +7,7 @@ function BW = LBDetection3D(img,s,r)
 % output : BW, binary mask of the image for LB
 
     s.dim    = 2;
-    s.intens = 0.05*65535*r; %a threshold for finding LB
+    s.intens = 0.05*(2^s.bit)*r; %a threshold for finding LB
     img_mip  = max(img,[],3);
     BW_mip   = process.LBDetection2D(img_mip,s); %define the position of LB first by MIP
 %     f1      = figure;

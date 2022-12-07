@@ -1,5 +1,5 @@
 function BW = threshold(img,s)
-% input  : img, processed image
+% input  : img, processed image, should be uint16 for speed
 %          s, config
 %          
 % output : BW, binark mask after thresholding
@@ -19,9 +19,9 @@ function BW = threshold(img,s)
             
             idx      = find(omega>thres);
             t        = (idx(1) - 1) / (num_bins - 1);
-            BW       = imbinarize(img,t);
+            BW       = img > t*num_bins;
         otherwise
             error('not supported method');
     end
-    BW = imfill(BW,'holes');
+%     BW = imfill(BW,'holes');
 end

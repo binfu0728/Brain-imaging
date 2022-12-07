@@ -18,25 +18,32 @@ function [smallM,largeM,result_oligomer,result_slice] = aggregateDetection(img,s
     BW1        = process.LBDetection3D(img,s1,r); %detect large objects in the FoV (not the large aggregates)
     smallM     = false(s1.width*4,s1.height*4,size(BW1,3));
     largeM     = smallM;
-    
-%     parfor (j = 1:size(img,3),8)
-    for j = 1:size(img,3)
-        zimg     = double(imresize(img(:,:,j),4));
-        BW2      = process.oligomerDetection(zimg,s2); %detect small objects in the FoV (not the oligomers)
-        % add pixelidx dilation
-        BW2      = BW2 - process.findCoincidence(imresize(BW1(:,:,j),4),BW2,2); %get rid of the overlapping region between BW1 and BW2s
+    h          = image.rickerWavelet(s2.k_log);
 
-        BW       = imresize(BW1(:,:,j),4) | BW2; %BW1 + BW2
-        a        = regionprops ('table',BW,'Area').Area; 
+    NA         = 1.45;
+    lamda      = 600;
+    pixelsize  = 107;
+    upsampling = 4;
+    rd         = ceil((0.61*lamda/NA/pixelsize*upsampling)^2*pi);%rayleigh diffraction limit
+
+    parfor (j = 1:size(img,3),8)
+%     for j = 1:size(img,3)
+        zimg = double(imresize(img(:,:,j),4));
+        BW2  = process.oligomerDetection(zimg,h,s2); %detect small objects in the FoV (not the oligomers)
+%         BW2  = BW2 - process.findCoincidence(imresize(BW1(:,:,j),4),BW2,2); %get rid of the overlapping region between BW1 and BW2
+        BW   = imresize(BW1(:,:,j),4) | BW2; %BW1 + BW2
+        BW   = imclose(BW,strel('disk',10));
+        a    = regionprops ('table',BW,'Area').Area; 
+
         if ~isempty(bwconncomp(BW).PixelIdxList)
-            idx1  = find(a>=300); %rayleigh diffraction limit
+            idx1  = find(a>=rd); 
             smallM(:,:,j) = image.fillRegions(BW,idx1);
-            idx1  = find(a<300); %rayleigh diffraction limit
+            idx1  = find(a<rd); %rayleigh diffraction limit
             largeM(:,:,j) = image.fillRegions(BW,idx1);
         end
 
         if saved
-            [r_z,r_avg]     = image.findInfo(smallM(:,:,j),zimg,z,j);
+            [r_z,r_avg]     = image.findInfo(smallM(:,:,j),img(:,:,j),z,j);
             result_oligomer = [result_oligomer;r_z];
             result_slice    = [result_slice;r_avg];
         end
