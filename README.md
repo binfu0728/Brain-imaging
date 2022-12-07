@@ -4,6 +4,8 @@
 
 ***gaussianFit***: 2D gaussian fitting for spots
 
+***- 07/12/22 update***: Official GUI is uploaded and oligomer intensity estimation is updated
+
 ***- 23/10/22 update***: More comments is added to the v1.0 code. Metadata loading is optimized
 
 ***- 22/09/22 update***: The formal v1.0 is uploaded. It can detect both small and large aggregates and also some type of cells. The preset configurations for some types are uploaded as well 
