@@ -4,7 +4,9 @@
 
 ***gaussianFit***: 2D gaussian fitting for spots
 
-***- 07/12/22 update***: Official GUI is uploaded and oligomer intensity estimation is updated
+***- 13/12/22 update***: GUIv5 is uploaded. This is the first official version. Also, the code is updated from 4x upsampling to 1x upsampling. Lib is changed
+
+***- 07/12/22 update***: Test GUI is uploaded and oligomer intensity estimation is updated
 
 ***- 23/10/22 update***: More comments is added to the v1.0 code. Metadata loading is optimized
 
