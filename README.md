@@ -37,9 +37,3 @@
 ***- 12/12/21 update***: update of the gaussian fit code with the new ability to estimate the rotational angle of a gaussian spot
 
 ***- 07/12/21 update***: simpler kernel function with only one input for determining kernel size and the maskfilter function is updated correspounding to kernel size (to eliminate auto-filling artefact during the convolution). Also, the newest intensity estimation with dilated signal mask is implemented
-
-***17-26 round***: c1 - 488nm, c2 - 568nm, c3 - 405nm
-
-***10-11 & 14-16 round***: c1 - 568nm, c2 - 405nm, c3 - 488nm
-
-***12-13 round***: c1 - 568nm, c2 - 488nm
