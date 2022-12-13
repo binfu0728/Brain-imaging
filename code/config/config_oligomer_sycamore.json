@@ -8,11 +8,11 @@
 	"colour" : 1,
 	"hyper" : "xytcz",
 	"k1_dog" : 0,
-	"k2_dog" : 20,
+	"k2_dog" : 5,
 	"k_log" : 
 	[
-		4,
-		4
+		1.1,
+		1.1
 	],
 	"dim" : 2,
 	"thres_method" : "percentage",
@@ -20,5 +20,6 @@
 	"percent" : 0.975,
 	"area" : 0,
 	"intens_ratio" : 0,
-	"disk" : 5
+	"disk" : 1,
+	"bit" : 12
 }

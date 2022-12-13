@@ -16,5 +16,6 @@
 	"percent" : 0,
 	"area" : 20,
 	"intens_ratio" : 1.2,
-	"disk" : 0
+	"disk" : 0,
+	"bit" : 12
 }

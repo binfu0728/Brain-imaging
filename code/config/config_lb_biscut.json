@@ -16,6 +16,7 @@
 	"percent" : 0,
 	"area" : [200,6000],
 	"intens_ratio" : 1.2,
-	"disk" : 0
+	"disk" : 0,
+	"bit" : 16
 }
 

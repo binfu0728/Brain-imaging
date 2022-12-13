@@ -10,11 +10,11 @@ function [BW,rate] = findCoincidence(BW1,BW2,ref)
     BW = m1(:,:,ref);
 
     if sum(BW1,'all') ~= 0 && sum(BW2,'all') ~= 0 %if there is at least one object in each channel
-        [rate,test] = analyze.coincidence(m1,ref);
-        regions     = bwconncomp(BW).PixelIdxList;
+        [rate,test] = core.coincidence(m1,ref);
+        regions     = bwconncomp(BW,8).PixelIdxList;
         if ~isempty(regions)
             idx = find(test<=0.1);
-            BW  = image.fillRegions(BW,idx);
+            BW  = core.fillRegions(BW,idx);
         end
     else
         rate = 0;

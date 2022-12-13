@@ -1,5 +1,5 @@
-function [smallM,largeM,result_oligomer,result_slice] = aggregateDetection(img,s1,s2,z,saved)
-% input  : img, the original image stack
+function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved)
+% input  : img, the original image stack, has to be in single/double
 %          s1, the config for lb detection
 %          s2, the config for oligomer detection
 %          z, the initial slice for the img stack 
@@ -11,41 +11,67 @@ function [smallM,largeM,result_oligomer,result_slice] = aggregateDetection(img,s
 %          result_slice, result per slice
 
     result_oligomer = [];
-    result_slice    = [];
+%     result_slice    = [];
 
-%     r          = double(max(max(img,[],'all')*0.8,4*median(img,'all')))/65535; 
-    r          = 1; %the ratio between the max(LB) and saturation (65535)
-    BW1        = process.LBDetection3D(img,s1,r); %detect large objects in the FoV (not the large aggregates)
-    smallM     = false(s1.width*4,s1.height*4,size(BW1,3));
-    largeM     = smallM;
-    h          = image.rickerWavelet(s2.k_log);
+    r         = 1; %the ratio between the max(LB) and saturation (65535)
+    s1.intens = 0.05*(2^s2.bit)*r;
+    BW_mip    = process.LBDetection2D(max(img,[],3),s1); %determine the large objects position in the FoV (through MIP)
+    smallM    = false(s1.width,s1.height,size(img,3));
+    largeM    = smallM;
+    h         = core.rickerWavelet(s2.k_log);
 
-    NA         = 1.45;
-    lamda      = 600;
-    pixelsize  = 107;
-    upsampling = 4;
-    rd         = ceil((0.61*lamda/NA/pixelsize*upsampling)^2*pi);%rayleigh diffraction limit
+    NA        = 1.45;
+    lamda     = 600; %nm
+    pixelsize = 107; %nm
+    rd        = ceil((0.61*lamda/NA/pixelsize)^2*pi);%rayleigh diffraction limit,in pixel
+
+    % 3D rough detection for large objects
+    s1.ostu_num = 2;
+    img1      = imgaussfilt3(img,s1.k1_dog) - imgaussfilt3(img,s1.k2_dog);
+    img1      = max(img1,0);
+    BW1       = core.threshold(img1,s1);
+    intens_ratio = s1.intens_ratio;
 
     parfor (j = 1:size(img,3),8)
 %     for j = 1:size(img,3)
-        zimg = double(imresize(img(:,:,j),4));
-        BW2  = process.oligomerDetection(zimg,h,s2); %detect small objects in the FoV (not the oligomers)
-%         BW2  = BW2 - process.findCoincidence(imresize(BW1(:,:,j),4),BW2,2); %get rid of the overlapping region between BW1 and BW2
-        BW   = imresize(BW1(:,:,j),4) | BW2; %BW1 + BW2
-        BW   = imclose(BW,strel('disk',10));
-        a    = regionprops ('table',BW,'Area').Area; 
+        zimg = img(:,:,j);
+        % large object detection
+        BW1(:,:,j) = BWFilter(BW1(:,:,j),zimg,intens_ratio*mean2(zimg)); %area and intensity post-filtering
+        BW1(:,:,j) = imfill(BW1(:,:,j),'holes');
+        BW1(:,:,j) = process.findCoincidence(BW_mip,BW1(:,:,j),2); %position post-filtering
 
-        if ~isempty(bwconncomp(BW).PixelIdxList)
+        % blob detection
+        BW2 = process.oligomerDetection(zimg,h,s2); %detect small objects in the FoV (not the oligomers)
+
+        %large and small selection
+        BW  = BW1(:,:,j) | BW2;
+        BW  = imclose(BW,strel('disk',2));
+        a   = regionprops('table',BW,'Area').Area; 
+
+        if ~isempty(bwconncomp(BW,8).PixelIdxList)
             idx1  = find(a>=rd); 
-            smallM(:,:,j) = image.fillRegions(BW,idx1);
+            smallM(:,:,j) = core.fillRegions(BW,idx1);
             idx1  = find(a<rd); %rayleigh diffraction limit
-            largeM(:,:,j) = image.fillRegions(BW,idx1);
+            largeM(:,:,j) = core.fillRegions(BW,idx1);
         end
 
         if saved
-            [r_z,r_avg]     = image.findInfo(smallM(:,:,j),img(:,:,j),z,j);
+            [r_z,~] = core.findInfo(smallM(:,:,j),img(:,:,j),j);
             result_oligomer = [result_oligomer;r_z];
-            result_slice    = [result_slice;r_avg];
+%             result_slice    = [result_slice;r_avg];
         end
     end
+end
+
+function BW = BWFilter(BW,img,intens_thresh)
+% input  : BW, binary mask
+%          img, the processed image
+%          s, config
+% 
+% output : BW, filtered binary mask
+
+    ss     = regionprops('table',BW,img,'MeanIntensity');
+    intens = ss.MeanIntensity;
+    idx    = find(intens<intens_thresh);
+    BW     = core.fillRegions(BW,idx);
 end

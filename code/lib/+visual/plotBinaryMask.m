@@ -16,8 +16,8 @@ function [] = plotBinaryMask(f,BW,colour,method,zimg)
                 plot(b(:,2),b(:,1),'r','linewidth',1.5,'Color',colour); %Plot boundary
 %         
 %                  ind = find(labelBW==j);
-%                  [m,n] = ind2sub(size(BW), ind);
-%                  text(mean(n),mean(m),['\color{white} ' num2str(j)], 'FontSize', 10,'fontweight','bold') %Plot number
+%                   [m,n] = ind2sub(size(BW), ind);
+%                   text(mean(n),mean(m),['\color{white} ' num2str(j)], 'FontSize', 10,'fontweight','bold') %Plot number
             end
         case 'overlay'
             brights  = imdilate(BW,strel('disk',12)).*zimg;

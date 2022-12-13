@@ -5,11 +5,9 @@ function BW = oligomerDetection(img,h,s)
 % 
 % output : BW, binary mask of the image for oligomers
 
-    s.dim = 2;
-    img1  = image.multiDoG(img,s);
+    img1  = img - imgaussfilt(img,s.k2_dog);
     img1  = max(img1,0);
     img1  = imfilter(img1,h,'replicate','conv','same');
-%     img1  = max(img1,0);
-    BW    = image.threshold(img1,s);
+    BW    = core.threshold(img1,s);
     BW    = imopen(BW,strel('disk',s.disk)); %structure post-filtering
 end
