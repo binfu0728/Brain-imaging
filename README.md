@@ -1,4 +1,4 @@
-# Brain sample imaging processing code
+# Brain sample image processing code
 
 ***code***: The formal version of the detection and analysis code
 
