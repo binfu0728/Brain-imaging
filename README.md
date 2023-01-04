@@ -2,7 +2,7 @@
 
 ***code***: The formal version of the detection and analysis code
 
-***gaussianFit***: 2D gaussian fitting for spots
+***- 04/01/23 update***: guassianFit code is changed to a function file.
 
 ***- 13/12/22 update***: GUIv5 is uploaded. This is the first official version. Also, the code is updated from 4x upsampling to 1x upsampling. Lib is changed
 
