@@ -1,4 +1,4 @@
-function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved)
+function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved,gain,offset)
 % input  : img, the original image stack, has to be in single/double
 %          s1, the config for lb detection
 %          s2, the config for oligomer detection
@@ -14,7 +14,7 @@ function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved)
 %     result_slice    = [];
 
     r         = 1; %the ratio between the max(LB) and saturation (65535)
-    s1.intens = 0.05*(2^s2.bit)*r;
+    s1.intens = 0.05*2^(s1.bit)*r;
     BW_mip    = process.LBDetection2D(max(img,[],3),s1); %determine the large objects position in the FoV (through MIP)
     smallM    = false(s1.width,s1.height,size(img,3));
     largeM    = smallM;
@@ -23,18 +23,17 @@ function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved)
     NA        = 1.45;
     lamda     = 600; %nm
     pixelsize = 107; %nm
-    rd        = ceil((0.61*lamda/NA/pixelsize)^2*pi);%rayleigh diffraction limit,in pixel
+    rd        = ceil((0.61*lamda/NA/pixelsize)^2*pi/1);%rayleigh diffraction limit,in pixel
 
     % 3D rough detection for large objects
-    s1.ostu_num = 2;
     img1      = imgaussfilt3(img,s1.k1_dog) - imgaussfilt3(img,s1.k2_dog);
-    img1      = max(img1,0);
     BW1       = core.threshold(img1,s1);
     intens_ratio = s1.intens_ratio;
 
-    parfor (j = 1:size(img,3),8)
-%     for j = 1:size(img,3)
+%     parfor (j = 1:size(img,3),8)
+    for j = 1:size(img,3)
         zimg = img(:,:,j);
+        zimg = (zimg-offset).*gain;
         % large object detection
         BW1(:,:,j) = BWFilter(BW1(:,:,j),zimg,intens_ratio*mean2(zimg)); %area and intensity post-filtering
         BW1(:,:,j) = imfill(BW1(:,:,j),'holes');
@@ -46,15 +45,17 @@ function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved)
         %large and small selection
         BW  = BW1(:,:,j) | BW2;
         BW  = imclose(BW,strel('disk',2));
-        a   = regionprops('table',BW,'Area').Area; 
+        t   = regionprops('table',BW,zimg,'Area','MeanIntensity');
+        a   = t.Area; it = t.MeanIntensity;
 
-        if ~isempty(bwconncomp(BW,8).PixelIdxList)
-            idx1  = find(a>=rd); 
+        if ~isempty(a)
+            idx1  = find(a>=rd);
             smallM(:,:,j) = core.fillRegions(BW,idx1);
             idx1  = find(a<rd); %rayleigh diffraction limit
+%             idx1  = find((a<rd) | (it<400 & a>170) | (it<280 & a<170 & a>1.5*rd));
             largeM(:,:,j) = core.fillRegions(BW,idx1);
         end
-
+        
         if saved
             [r_z,~] = core.findInfo(smallM(:,:,j),img(:,:,j),j);
             result_oligomer = [result_oligomer;r_z];

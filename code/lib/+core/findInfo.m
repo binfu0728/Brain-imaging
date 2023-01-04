@@ -8,11 +8,11 @@ function [result_oligomer,result_slice,BW] = findInfo(BW,zimg,j)
 
     result_slice       = zeros(1,3); %result per slice, averaged number, averaged mean intensity, averaged sum intensity
 %     [aps,BW]          = image.BWdilation(BW);
-    [sigImage,bgImage] = core.extractBg(BW,zimg); %pure signal and pure background
+    [sigImage,bgImage] = core.extractBg(imdilate(BW,strel('disk',2)),zimg); %pure signal and pure background
     result_oligomer    = regionprops('table',BW,sigImage,'centroid','MeanIntensity','Area');
 
     if ~isempty(result_oligomer) %if there is at least one oligomer in the FoV
-        sumintensity   = 2.5*result_oligomer.MeanIntensity.*result_oligomer.Area; %total intensity per oligomer in long format, 2.5x from calibration between gaussian and flood fill intensity finding calibration
+        sumintensity   = result_oligomer.MeanIntensity.*result_oligomer.Area; %total intensity per oligomer in long format, 2.5x from calibration between gaussian and flood fill intensity finding calibration
 %         sumintensity = zeros(size(result_oligomer,1),1); %use the real mask dilation result, not from calibration ratio
 %         for k = 1:size(result_z,1)
 %             sumintensity(k) = sum(sigImage(aps{k}));
