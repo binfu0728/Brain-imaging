@@ -1,4 +1,4 @@
-clc;clear;addpath(genpath('C:\Users\Bigtree\Desktop\code\'));
+clc;clear;addpath(genpath('D:\code\'));
 load('gain_sycamore.mat');
 load('offset_sycamore.mat');
 
