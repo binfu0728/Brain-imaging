@@ -1,6 +1,6 @@
-clc;clear;addpath(genpath('D:\code\')); %path where you download the code
+clc;clear;addpath(genpath('C:\Users\Bigtree\Desktop\code\')); %path where you download the code
 
-filedir           = 'D:\Bin\gui_test'; %main directory where you have the data (above round)
+filedir           = 'C:\Users\Bigtree\Desktop\test'; %main directory where you have the data (above round)
 T                 = process.makeMetadata(filedir);
 filenames         = T.filenames;
 
@@ -8,10 +8,11 @@ filenames         = T.filenames;
 
 for i = 1:length(filenames)
     tiff_info   = imfinfo(filenames{i}); %length of tiffinfo = number of tif images in a tif stack
-    zs(i,:)     = [11 (length(tiff_info)-10)]; %[zi zf]
+    zs(i,:)     = [1 length(tiff_info)]; %[zi zf]
     i
-    end
 end
 
 %% write table
-writetable(T,'prok_metadata.csv');
+T.zi = zs(:,1);
+T.zf = zs(:,2);
+writetable(T,'test_metadata.csv');
