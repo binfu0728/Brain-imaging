@@ -1,40 +1,17 @@
-clc;clear;addpath(genpath('D:\code\'));
-s                 = load.loadJSON('config_oligomer_biscut.json');
+clc;clear;addpath(genpath('D:\code\')); %path where you download the code
 
-filedir           = 'D:\Bin\gui_test';
+filedir           = 'D:\Bin\gui_test'; %main directory where you have the data (above round)
 T                 = process.makeMetadata(filedir);
-
 filenames         = T.filenames;
-[filepath,name,~] = fileparts(filenames);
-filepath          = cellfun(@(x) load.extractPath(x,3),filepath,'UniformOutput',false);
-rsid              = T.rsid; 
 
-%% One-time use and the original folder will be renamed
-used = [];
+%% Read through all folders and select used slices
 
 for i = 1:length(filenames)
-    filename    = filenames{i};
-    tiff_info   = imfinfo(filename);
-    if length(tiff_info) ~= 340
-        continue
-    else
-        used = [used;i];
-        img         = load.loadImage(filename,s);
-        img         = squeeze(mean(img,4));%xyzc
-        img         = cat(3,img(:,:,:,1),img(:,:,:,2));
-    
-        newFolder = fullfile(load.extractPath(filedir,2),filepath{i});
-        
-        if ~exist(newFolder, 'dir')
-            mkdir(newFolder); 
-        end
-        load.Tifwrite(uint16(img),fullfile(newFolder,[name{i},'.tif']));
-        i
+    tiff_info   = imfinfo(filenames{i}); %length of tiffinfo = number of tif images in a tif stack
+    zs(i,:)     = [11 (length(tiff_info)-10)]; %[zi zf]
+    i
     end
 end
 
-movefile(filedir,[filedir,'_ori']);
-movefile(load.extractPath(filedir,2),filedir);
-%%
-T1 = T(used,:);
-writetable(T1,'prok_metadata.csv');
+%% write table
+writetable(T,'prok_metadata.csv');
