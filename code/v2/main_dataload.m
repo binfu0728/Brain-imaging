@@ -1,4 +1,4 @@
-clc;clear;addpath(genpath('C:\Users\Bigtree\Desktop\code\')); %path where you download the code
+clc;clear;addpath(genpath('D\code\')); %path where you download the code
 
 filedir           = 'C:\Users\Bigtree\Desktop\test'; %main directory where you have the data (above round)
 T                 = process.makeMetadata(filedir);
