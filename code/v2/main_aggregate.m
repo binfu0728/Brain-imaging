@@ -1,4 +1,4 @@
-clc;clear;addpath(genpath('D:\code\'));
+clc;clear;addpath(genpath('D:\code\')); %path where you download the code
 load('gain_sycamore.mat');
 load('offset_sycamore.mat');
 
