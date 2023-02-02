@@ -2,6 +2,8 @@
 
 ***code***: The formal version of the detection and analysis code
 
+***- 02/02/23 update***: Simplify and add more comments to the main functions
+
 ***- 18/01/23 update***: Fix a bug for metadata loading function.
 
 ***- 04/01/23 update***: guassianFit code is changed to a function file.
