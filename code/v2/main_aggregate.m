@@ -3,16 +3,16 @@ load('gain_sycamore.mat');
 load('offset_sycamore.mat');
 
 % for small and large aggregtes
-s1 = load.loadJSON('config_lb_sycamore.json');
-s2 = load.loadJSON('config_oligomer_sycamore.json');
-s2.k2_dog  = 1.75;
-s2.percent = 0.975; 
-[filenames,filepath,z,rsid] = load.loadMeta('test_metadata.csv');
+s1 = load.loadJSON('config_lb_sycamore.json'); %large object (LB)
+s2 = load.loadJSON('config_oligomer_sycamore.json'); %small object (oligomers)
+s2.k2_dog  = 1.75; %should be similar to sigma of the blobs
+s2.percent = 0.975; %percentage thresholding (throwing ratio), for changing code sensitivity
+[filenames,filepath,z,rsid] = load.loadMeta('test_metadata.csv'); %input metadata
 
 %%
-saved = 0;
+saved = 0; %1 for saving results but no visualization, 1 for only visualization but no saving
 
-for i = 1:10%:length(filenames)
+for i = 1%:length(filenames)
     img        = load.Tifread(filenames{i});
     img_c      = double(img(:,:,z(i,1):z(i,2)));
     [smallM,largeM,r_z] = process.aggregateDetection(img_c,s1,s2,saved,gain,offset);
@@ -31,7 +31,7 @@ for i = 1:10%:length(filenames)
             visual.plotBinaryMask(f,smallM(:,:,j),[0.8500 0.3250 0.0980])
             pause(0.1);
         end
-%         close all
+        close all
     end
     i
 end
