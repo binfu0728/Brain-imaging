@@ -18,12 +18,12 @@ for i = 1:length(filenames)
     newFolder = load.makeDir(fullfile(['.\dab_result\',filepath{i}]));
     BW_asyn = colourFilterLAB(img,[LMean_brown,aMean_brown,bMean_brown,tolerance_brown],[0.75,3.5],0,0.05);
     BW_asyn = bwareaopen(BW_asyn,5);
+    BW_asyn = imdilate(BW_asyn,strel('disk',1));
+    BW_asyn = imclearborder(BW_asyn); 
     t_asyn  = regionprops('table',BW_asyn,'Area','Centroid','Circularity','Eccentricity','EquivDiameter','MajorAxisLength','MinorAxisLength','Perimeter');
     BW_nucl = colourFilterLAB(img,[LMean_blue,aMean_blue,bMean_blue,tolerance_blue],[1,2],1,0.08);
     t_nucl  = regionprops('table',BW_nucl,'Area','Centroid','Circularity','Eccentricity','EquivDiameter','MajorAxisLength','MinorAxisLength','Perimeter');
     
-    BW_asyn = imdilate(BW_asyn,strel('disk',1));
-    BW_asyn = imclearborder(BW_asyn); 
 %     writetable(t_asyn,fullfile(newFolder,'result_asyn.csv'));
 %     writetable(t_nucl,fullfile(newFolder,'result_nuclei.csv'));
 
