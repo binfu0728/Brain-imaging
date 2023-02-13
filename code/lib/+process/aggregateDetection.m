@@ -13,8 +13,7 @@ function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved,ga
     result_oligomer = [];
 %     result_slice    = [];
 
-    r         = 1; %the ratio between the max(LB) and saturation (65535)
-    s1.intens = 0.05*2^(s1.bit)*r;
+    bits      = (s1.bit);
     BW_mip    = process.LBDetection2D(max(img,[],3),s1); %determine the large objects position in the FoV (through MIP)
     smallM    = false(s1.width,s1.height,size(img,3));
     largeM    = smallM;
@@ -28,31 +27,34 @@ function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved,ga
     % 3D rough detection for large objects
     img1      = imgaussfilt3(img,s1.k1_dog) - imgaussfilt3(img,s1.k2_dog);
     BW1       = core.threshold(img1,s1);
-    intens_ratio = s1.intens_ratio;
 
 %     parfor (j = 1:size(img,3),8)
     for j = 1:size(img,3)
         zimg = img(:,:,j);
         zimg = (zimg-offset).*gain;
         % large object detection
-        BW1(:,:,j) = BWFilter(BW1(:,:,j),zimg,intens_ratio*mean2(zimg)); %area and intensity post-filtering
-        BW1(:,:,j) = imfill(BW1(:,:,j),'holes');
+        t = regionprops('table',BW1(:,:,j),zimg,'PixelValues'); %area and intensity post-filtering
+        counts = cell2mat(cellfun(@(x) findPercentileMean(x,0.05),t.PixelValues,'UniformOutput',false));
+        if ~isempty(counts)
+            idx1  = find(counts<2^bits*0.5);
+            BW1(:,:,j) = core.fillRegions(BW1(:,:,j),idx1);
+        end
+%         BW1(:,:,j) = imfill(BW1(:,:,j),'holes');
         BW1(:,:,j) = process.findCoincidence(BW_mip,BW1(:,:,j),2); %position post-filtering
 
         % blob detection
-        BW2 = process.oligomerDetection(zimg,h,s2); %detect small objects in the FoV (not the oligomers)
+        BW2 = process.oligomerDetection2(zimg,h,s2); %detect small objects in the FoV (not the oligomers)
 
         %large and small selection
         BW  = BW1(:,:,j) | BW2;
         BW  = imclose(BW,strel('disk',2));
         t   = regionprops('table',BW,zimg,'Area','MeanIntensity');
-        a   = t.Area; it = t.MeanIntensity;
+        a   = t.Area;
 
         if ~isempty(a)
             idx1  = find(a>=rd);
             smallM(:,:,j) = core.fillRegions(BW,idx1);
             idx1  = find(a<rd); %rayleigh diffraction limit
-%             idx1  = find((a<rd) | (it<400 & a>170) | (it<280 & a<170 & a>1.5*rd));
             largeM(:,:,j) = core.fillRegions(BW,idx1);
         end
         
@@ -64,15 +66,9 @@ function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved,ga
     end
 end
 
-function BW = BWFilter(BW,img,intens_thresh)
-% input  : BW, binary mask
-%          img, the processed image
-%          s, config
-% 
-% output : BW, filtered binary mask
-
-    ss     = regionprops('table',BW,img,'MeanIntensity');
-    intens = ss.MeanIntensity;
-    idx    = find(intens<intens_thresh);
-    BW     = core.fillRegions(BW,idx);
+function m = findPercentileMean(counts,percentile)
+    counts  = sort(counts(:));
+    highend = round(length(counts)*(1-percentile));
+    counts  = counts(highend:end);
+    m       = mean(counts);
 end
