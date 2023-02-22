@@ -32,7 +32,7 @@ function [BW,param] = colourFilterLAB(i,init,rate,postprocessing,percentage)
 
         count = count + 1;
 %         f = figure;
-%         imshow(i);
+%         imshow(deltaE,[]);
 %         visual.plotBinaryMask(f,mask_cur,[0.8500 0.3250 0.0980]);
     end
     BW = mask_pre;
