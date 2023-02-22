@@ -2,6 +2,8 @@
 
 ***code***: The formal version of the detection and analysis code
 
+***- 22/02/23 update***: add minor axis length filtering to the colour segmentation.
+
 ***- 13/02/23 update***: Update on LB detection (faster)
 
 ***- 02/02/23 update***: Simplify and add more comments to the main functions
