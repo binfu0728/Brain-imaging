@@ -4,9 +4,8 @@
 
 <<<<<<< HEAD
 ***- 06/03/23 update***: Update on sycamore camera gain
-=======
+
 ***- 22/02/23 update***: add minor axis length filtering to the colour segmentation.
->>>>>>> 95922cbba1fdc5779da136d40d5cf2f67f143e86
 
 ***- 13/02/23 update***: Update on LB detection (faster)
 
