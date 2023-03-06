@@ -2,6 +2,8 @@
 
 ***code***: The formal version of the detection and analysis code
 
+***- 06/03/23 update***: Update on sycamore camera gain
+
 ***- 13/02/23 update***: Update on LB detection (faster)
 
 ***- 02/02/23 update***: Simplify and add more comments to the main functions
