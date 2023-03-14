@@ -59,7 +59,7 @@ function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved,ga
         end
         
         if saved
-            [r_z,~] = core.findInfo(smallM(:,:,j),img(:,:,j),j);
+            [r_z,~] = core.findInfo(smallM(:,:,j),zimg,j);
             result_oligomer = [result_oligomer;r_z];
 %             result_slice    = [result_slice;r_avg];
         end
