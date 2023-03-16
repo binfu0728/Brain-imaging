@@ -7,10 +7,10 @@ function [] = plotScaleBar(f,img,pixelRes,scale)
     figure(f);hold on;
     [r,c] = size(img);
     length_bar = round(scale/pixelRes);
-    width_bar = round(length_bar/10);
+    width_bar = round(length_bar/5);
     r_start = round(r*13/14) - length_bar;
     c_start = round(c*13/14) - width_bar;
     
     rectangle('Position',[r_start,c_start,length_bar,width_bar],'FaceColor',[1 1 1])
-    text(r_start+(length_bar/2),c_start-2,[num2str(scale),'\mum'],'HorizontalAlignment','center','VerticalAlignment','bottom','Color',[1 1 1],'Fontweight','bold');
+    text(r_start+(length_bar/2),c_start-2,[num2str(scale),'\mum'],'HorizontalAlignment','center','VerticalAlignment','bottom','Color',[1 1 1],'Fontweight','bold','FontSize',16);
 end

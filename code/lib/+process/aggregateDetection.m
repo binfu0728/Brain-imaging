@@ -28,14 +28,14 @@ function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved,ga
     img1      = imgaussfilt3(img,s1.k1_dog) - imgaussfilt3(img,s1.k2_dog);
     BW1       = core.threshold(img1,s1);
 
-%     parfor (j = 1:size(img,3),8)
-    for j = 1:size(img,3)
+    parfor (j = 1:size(img,3),8)
+%     for j = 1:size(img,3)
         zimg = img(:,:,j);
         zimg = (zimg-offset).*gain;
         % large object detection
         t = regionprops('table',BW1(:,:,j),zimg,'PixelValues'); %area and intensity post-filtering
-        counts = cell2mat(cellfun(@(x) findPercentileMean(x,0.05),t.PixelValues,'UniformOutput',false));
-        if ~isempty(counts)
+        if size(t,1)>2
+            counts = cell2mat(cellfun(@(x) findPercentileMean(x,0.05),t.PixelValues,'UniformOutput',false));
             idx1  = find(counts<2^bits*0.5);
             BW1(:,:,j) = core.fillRegions(BW1(:,:,j),idx1);
         end

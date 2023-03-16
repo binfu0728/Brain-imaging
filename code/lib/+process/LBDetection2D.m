@@ -9,9 +9,9 @@ function BW = LBDetection2D(img,s)
     BW   = core.threshold(img1,s);
 
     t = regionprops('table',BW,img,'PixelValues'); %area and intensity post-filtering
-    counts = cell2mat(cellfun(@(x) findPercentileMean(x,0.05),t.PixelValues,'UniformOutput',false));
-    if ~isempty(counts)
-        idx1  = find(counts<2^s.bit*0.5);
+    if size(t,1) > 1
+        counts = cell2mat(cellfun(@(x) findPercentileMean(x,0.05),t.PixelValues,'UniformOutput',false));
+        idx1  = find(counts<2^s.bit*0.15);
         BW = core.fillRegions(BW,idx1);
     end
 end

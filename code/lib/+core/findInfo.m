@@ -25,9 +25,9 @@ function [result_oligomer,result_slice,BW] = findInfo(BW,zimg,j)
 %         result_slice(2) = mean(result_oligomer.SumIntensity); 
 %         result_slice(3) = median(bgImage,'all');
     else
-        result_oligomer = array2table([0 0 0 0 0 j]);
+        result_oligomer = array2table([0 0 0 0 0 0 j]);
         result_oligomer = mergevars(result_oligomer,[2,3]);
-        result_oligomer = renamevars(result_oligomer,1:5,{'Area','Centroid','MeanIntensity','SumIntensity','z'});
+        result_oligomer = renamevars(result_oligomer,1:5,{'Area','Centroid','MeanIntensity','SumIntensity','bg','z'});
 %         result_slice(1) = 0;
 %         result_slice(2) = 0; 
 %         result_slice(3) = median(bgImage,'all');

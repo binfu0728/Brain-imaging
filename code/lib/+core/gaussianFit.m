@@ -3,7 +3,7 @@ function [fit_spot,image_Region,sigmaY,sigmaX,bgEstimation,fit_spot_noBg] = gaus
 % INPUT
 % position       : The position for a fitted point in [x,y] (centroid position)
 % original_img   : The original image
-% fitting_radius : The radius of fitting_region (in Luc's code, this is named as fitting_region)
+% fitting_radius : The radius of fitting_region
 % 
 % OUTPUT
 % fit_spot       : The fit spot based on the 2D gaussian fitting
@@ -13,7 +13,7 @@ function [fit_spot,image_Region,sigmaY,sigmaX,bgEstimation,fit_spot_noBg] = gaus
 % bgEstimation   : Estimated background value for a given spot
 % fit_spot_noBg  : The fit spot without background value
 
-    fitting_radius                 = 20;
+    fitting_radius                 = 5;
     amplitude_limits               = [0 2^16];
     amplitude_range                = diff(amplitude_limits);
     background_limits              = [0 2^16];

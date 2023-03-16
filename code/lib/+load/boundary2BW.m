@@ -1,4 +1,4 @@
-function BW = boundary2BW(mat,s)
+function BW = boundary2BW(mat,s,ratio)
 % input  : mat, the boundary of the cell/large aggregates
 %          s, conig
 %          ratio, upsampling ratio
@@ -10,4 +10,5 @@ function BW = boundary2BW(mat,s)
         BW(tmpt) = 1;
         BW = imfill(BW,'holes');
     end
+    BW = imresize(BW,ratio);
 end

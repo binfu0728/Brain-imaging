@@ -9,6 +9,8 @@ prefix  = 'sycamore_compare_2_result\'; %result folder name
 nums_z   = []; %number per slice
 inten_i  = {}; %intensity per oligomer 
 inten_t  = []; %tmpt holder
+bg_i     = {}; %intensity per oligomer 
+bg_t     = []; %tmpt holder
 
 for i = 1%:length(filenames)
 
@@ -17,20 +19,22 @@ for i = 1%:length(filenames)
     large = readmatrix(filenames{idx{1}}); %large aggregate result
     small = readmatrix(filenames{idx{2}}); %small aggregate result
 
-    [nums,~,inten_all] = process.longFormatting({small},{large},z(i,:),rsid(i),s);
-    nums_z          = [nums_z;nums];
-    inten_t         = [inten_t;inten_all];
+    [nums,~,inten_all,bg,bg_all] = process.longFormatting({small},{large},z(i,:),rsid(i),s);
+    nums_z  = [nums_z;nums];
+    inten_t = [inten_t;inten_all];
+    bg_t    = [bg_t;bg_all];
     i
 end
 
 %concat intensity into single cell
 for i = 1:size(inten_t,2)
     inten_i{i} = vertcat(inten_t{:,i});
+    bg_i{i}    = vertcat(bg_t{:,i});
 end
 
 %% write table
 T1 = array2table(nums_z,"VariableNames",{'small_nums_561','large_nums_561','rsid'});
 writetable(T1,'numbers_561_slice_.csv');
 
-T2 = array2table(inten_i{1},"VariableNames",{'sum_intensity','rsid'});
+T2 = array2table([inten_i{1},bg_i{1}],"VariableNames",{'sum_intensity','rsid1','bg','rsid2'});
 writetable(T2,'intensity_561_oligomer.csv');

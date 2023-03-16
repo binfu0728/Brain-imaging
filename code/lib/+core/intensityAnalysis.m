@@ -7,9 +7,13 @@ function [inten_z,inten_i] = intensityAnalysis(lists,z)
 
     inten_z = zeros(1,length(lists));
     inten_i = cell(1,length(lists));
+    bg_z    = zeros(1,length(lists));
+    bg_i    = cell(1,length(lists));
     for i = 1:length(lists)
         tmpt       = lists{i};
         inten_z(i) = mean(tmpt(tmpt(:,end)==z,5),1); %5th col is the intensity
         inten_i{i} = [inten_i{i};tmpt(tmpt(:,end)==z,5)]; %concat intensities into a long format
+        bg_z(i)    = mean(tmpt(tmpt(:,end)==z,6),1); %6th col is the bg
+        bg_i{i}    = [bg_i{i};tmpt(tmpt(:,end)==z,6)]; %concat bg into a long format
     end
 end
