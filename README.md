@@ -2,7 +2,8 @@
 
 ***code***: The formal version of the detection and analysis code
 
-<<<<<<< HEAD
+***- 16/03/23 update***: Update on the code to measure the background per oligomer
+
 ***- 06/03/23 update***: Update on sycamore camera gain
 
 ***- 22/02/23 update***: add minor axis length filtering to the colour segmentation.
