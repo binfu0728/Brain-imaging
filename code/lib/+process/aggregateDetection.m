@@ -43,7 +43,7 @@ function [smallM,largeM,result_oligomer] = aggregateDetection(img,s1,s2,saved,ga
         BW1(:,:,j) = process.findCoincidence(BW_mip,BW1(:,:,j),2); %position post-filtering
 
         % blob detection
-        BW2 = process.oligomerDetection2(zimg,h,s2); %detect small objects in the FoV (not the oligomers)
+        BW2 = process.oligomerDetection(zimg,h,s2); %detect small objects in the FoV (not the oligomers)
 
         %large and small selection
         BW  = BW1(:,:,j) | BW2;
