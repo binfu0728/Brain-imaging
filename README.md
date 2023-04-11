@@ -2,6 +2,8 @@
 
 ***code***: The formal version of the detection and analysis code
 
+***- 16/03/23 update***: v3 (with radiality) is uploaded. The parameter is only optimized for sycamore brain images. Not applicable to other images yet.
+
 ***- 16/03/23 update***: Update on the code to measure the background per oligomer
 
 ***- 06/03/23 update***: Update on sycamore camera gain
