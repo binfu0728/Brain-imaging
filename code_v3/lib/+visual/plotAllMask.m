@@ -1,8 +1,11 @@
-function f = plotAllMask(img,smallM,largeM,flagS,flagL,contrast,range,pauseTime)
+function f = plotAllMask(img,smallM,largeM,flagS,flagL,contrast,pauseTime,range)
     if nargin < 7
         range = [1 size(img,3)];
         pauseTime = 0.1;
+    elseif nargin < 8
+        range = [1 size(img,3)];
     end
+    
     for i = range(1):range(2)
         f = figure; imshow(img(:,:,i),contrast);
         pause(pauseTime);

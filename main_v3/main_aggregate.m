@@ -2,28 +2,29 @@ clc;clear;addpath(genpath('C:\Users\bf341\Desktop\code_v3\'));
 
 [gain,offset] = load.loadMap('sycamore'); %load gain and offset map from the specific microscope
 [filenames,filepath,z,rsid] = load.loadMeta('test_metadata.csv'); %load metadata to specify where images are saved and how to load them
-[k1,k2,k3]    = core.createKernel(1.4,1,2); %create kernels for the image processing
+[k1,k2]    = core.createKernel(1.4,2); %create kernels for the image processing
 
 %% process
-saved               = 0;
+saved               = 1;
 oligomer_result     = []; %x,y,z,intensity,background,rsid
 non_oligomer_result = []; %x,y,z,rsid
 numbers             = []; %oligomer_nums,non_oligomer_nums,rsid
 
-for i = 1%length(filenames)
-    img    = double(load.Tifread(filenames{i}));
+for i = 1%:4:length(filenames)
+    img    = double(load.Tifread('D:\Radiality\simulation_lb\simulated_images_14\img_1_400.tif'));
     tic
     % create repository for result binary masks
     smallM = false(size(img));
-    largeM = main.LBDetection(img);
+    largeM = main.lbDetection(img);
     centroids = cell(size(img,3),1);
     
     % aggregate detection
-%     parfor j = 1:size(img,3)
-    for j = 17%:size(img,3) 
-        zimg = (img(:,:,j) - offset) .* gain; %convert to number of photons
-        [smallM(:,:,j),largeM2,centroids{j}] = main.aggregateDetection(zimg,k1,k2,k3,25,1.6);
-        largeM(:,:,j) = largeM(:,:,j) | largeM2; %combine LB,LN and medium-sized aggregates
+    parfor j = 1:size(img,3)
+    % for j = 1:size(img,3) 
+        % zimg = (img(:,:,j) - offset) .* gain; %convert to number of photons
+        [smallM(:,:,j),largeM2,centroids{j}] = main.aggregateDetection(img(:,:,j),k1,k2,0.05,0.09);
+        length(centroids{j})
+        largeM(:,:,j) = largeM(:,:,j)|largeM2; %combine LB,LN and medium-sized aggregates
     end
     
     % save objects
@@ -33,11 +34,8 @@ for i = 1%length(filenames)
         non_oligomer_result = [non_oligomer_result;tmpt_non_oligomer];
         numbers             = [numbers;tmpt_num];
     else
-        figure;imshow(img(:,:,17),[0 500]);
-        f = figure;imshow(img(:,:,17),[0 500]);
-        length(centroids{17})
-%         f = visual.plotAllMask(img,smallM,largeM,1,1,[0 500],[17 17],0.5);
-        visual.plotBinaryMask(f,smallM(:,:,17),[0,0.5,1]);
+        f = visual.plotAllMask(img,smallM,largeM,1,1,[0 500],0.25);
+        close all
     end
     ttime = toc;
 

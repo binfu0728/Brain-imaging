@@ -1,42 +1,14 @@
-function [pixelIdxList,areas,centroids,aspect_ratios] = simplifiedRegionProps(BW,imsz,flag)
-    if nargin < 3
-        flag = 1;
-    end
+function [pixelIdxList,areas,centroids] = simplifiedRegionProps(BW,imsz)
 
     [pixelIdxList,nobj] = bwconncomp_2d(BW,8); %find 8-conn objects
-    areas         = zeros(nobj,1); 
-    centroids     = zeros(nobj,2);
-    aspect_ratios = zeros(nobj,1);
+    areas          = zeros(nobj,1); 
+    centroids      = zeros(nobj,2);
     for k = 1:nobj
         pil        = pixelIdxList{k}; %indice for each binary object
         [row,col]  = ind2sub(imsz,pil);
         areas(k)   = numel(pil);      
-        centroids(k,:)   = [mean(col),mean(row)]; %x,y
-        if flag == 1
-            aspect_ratios(k) = calculateAspecRatio(row,col);
-        end
+        centroids(k,:)   = [sum(col)/length(col),sum(row)/length(col)]; %x,y
     end
-end
-
-function as = calculateAspecRatio(r,c)
-    x = c - mean(c);
-    y = -(r - mean(r)); % This is negative for the
-    % orientation calculation (measured in the
-    % counter-clockwise direction).
-    
-    N = length(x);
-    
-    % Calculate normalized second central moments for the region. 1/12 is
-    % the normalized second central moment of a pixel with unit length.
-    uxx = sum(x.^2)/N + 1/12;
-    uyy = sum(y.^2)/N + 1/12;
-    uxy = sum(x.*y)/N;
-    
-    % Calculate major axis length, minor axis length, and eccentricity.
-    common = sqrt((uxx - uyy)^2 + 4*uxy^2);
-    majoraxis = 2*sqrt(2)*sqrt(uxx + uyy + common);
-    minoraxis = 2*sqrt(2)*sqrt(uxx + uyy - common);
-    as = majoraxis./minoraxis;
 end
 
 function [pixelIdxList,numObjects] = bwconncomp_2d(BW,mode)
