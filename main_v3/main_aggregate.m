@@ -11,7 +11,7 @@ non_oligomer_result = []; %x,y,z,rsid
 numbers             = []; %oligomer_nums,non_oligomer_nums,rsid
 
 for i = 1%:4:length(filenames)
-    img    = double(load.Tifread('D:\Radiality\simulation_lb\simulated_images_14\img_1_400.tif'));
+    img    = double(load.Tifread(filenames{i}));
     tic
     % create repository for result binary masks
     smallM = false(size(img));
