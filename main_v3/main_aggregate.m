@@ -22,7 +22,7 @@ for i = 1%:4:length(filenames)
     parfor j = 1:size(img,3)
     % for j = 1:size(img,3) 
         % zimg = (img(:,:,j) - offset) .* gain; %convert to number of photons
-        [smallM(:,:,j),largeM2,centroids{j}] = main.aggregateDetection(img(:,:,j),k1,k2,0.05,0.09);
+        [smallM(:,:,j),largeM2,centroids{j}] = main.aggregateDetection(img(:,:,j),k1,k2,0.05,[0.09,10]);
         length(centroids{j})
         largeM(:,:,j) = largeM(:,:,j)|largeM2; %combine LB,LN and medium-sized aggregates
     end
