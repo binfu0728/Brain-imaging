@@ -4,14 +4,19 @@ clc;clear;addpath(genpath('C:\Users\bf341\Desktop\code_v3\'));
 [filenames,filepath,z,rsid] = load.loadMeta('test_metadata.csv'); %load metadata to specify where images are saved and how to load them
 [k1,k2]    = core.createKernel(1.4,2); %create kernels for the image processing
 
+gain    = repmat(gain,[1 1 17]);
+offset  = repmat(offset,[1 1 17]);
+
 %% process
-saved               = 1;
+saved               = 0;
 oligomer_result     = []; %x,y,z,intensity,background,rsid
 non_oligomer_result = []; %x,y,z,rsid
 numbers             = []; %oligomer_nums,non_oligomer_nums,rsid
 
 for i = 1%:4:length(filenames)
-    img    = double(load.Tifread(filenames{i}));
+    img = double(load.Tifread(filenames{i}));
+    img = (img-offset).*gain;
+
     tic
     % create repository for result binary masks
     smallM = false(size(img));
@@ -21,8 +26,7 @@ for i = 1%:4:length(filenames)
     % aggregate detection
     parfor j = 1:size(img,3)
     % for j = 1:size(img,3) 
-        % zimg = (img(:,:,j) - offset) .* gain; %convert to number of photons
-        [smallM(:,:,j),largeM2,centroids{j}] = main.aggregateDetection(img(:,:,j),k1,k2,0.05,[0.09,10]);
+        [smallM(:,:,j),largeM2,centroids{j}] = main.aggregateDetection(img(:,:,j),k1,k2,0.05,[0.1,10]);
         length(centroids{j})
         largeM(:,:,j) = largeM(:,:,j)|largeM2; %combine LB,LN and medium-sized aggregates
     end

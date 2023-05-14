@@ -36,7 +36,7 @@ function [smallM,largeM,centroids,radiality] = aggregateDetection(img,k1,k2,thre
     pil_large = pixelIdxList(idxl);
     idxl      = false(length(pil_large),1);
     for k = 1:length(pil_large)
-        idxl(k) = (sum(img(pil_large{k})>400)/length(pil_large{k})) > 0.05; % 5% of values large than 400 - whether bright enough
+        idxl(k) = (sum(img(pil_large{k})>300)/length(pil_large{k})) > 0.05; % 5% of values large than 400 - whether bright enough
     end
     largeM = core.fillRegion(imsz,pil_large(idxl));
     largeM = imclose(largeM,strel('disk',2)); %connect some seperate sections
