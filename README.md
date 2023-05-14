@@ -2,6 +2,8 @@
 
 ***code***: The formal version of the detection and analysis code
 
+***- 14/05/23 update***: New gain and offset map for sCMOS camera on the sycamore microscope
+
 ***- 13/04/23 update***: update on defining radiality and add percentage thresholding to the code
 
 ***- 16/03/23 update***: v3 (with radiality) is uploaded. The parameter is only optimized for sycamore brain images. Not applicable to other images yet.
