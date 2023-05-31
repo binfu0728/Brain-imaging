@@ -13,8 +13,12 @@ function [dlMask,ndlMask,centroids,radiality] = smallFeatureKernel(img,largeMask
 
     BW(img1>thres) = 1;
     BW   = BW | largeMask; %mask contains all detected features regardless of size
-    % BW   = imopen(BW,strel('disk',1)); %filter tiny objects from spurious pixel noise
-    BW   = bwareaopen(BW,5); %filter tiny objects from spurious pixel noise
+    
+    if rdl(1) == 0 && rdl(2) == 0 %no radiality is used
+        BW = imopen(BW,strel('disk',1)); %filter tiny objects from spurious pixel noise
+    else
+        BW = bwareaopen(BW,5); %filter tiny objects from spurious pixel noise
+    end
     
     imsz = size(img);
     
