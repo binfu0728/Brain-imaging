@@ -2,18 +2,18 @@ clc;clear;addpath(genpath('C:\Users\bf341\Desktop\code_v3\'));
 
 [gain,offset] = load.loadMap('sycamore',17);
 [t_differential,t_integral] = load.loadInfocusThreshold('sycamore');
-[filenames,filepath,~,rsid] = load.loadMeta('sycamore_compare_test_metadata.xlsx'); %load metadata to specify where images are saved and how to load them
+[filenames,filepath,~,rsid] = load.loadMeta('test_metadata.xlsx'); %load metadata to specify where images are saved and how to load them
 [k1,k2] = core.createKernel(1.4,2); %create kernels for the image processing
 
 %% process
-saved           = 0;
+saved           = 1;
 oligomer_result = cell(length(filenames),1); %x,y,z,intensity,background,rsid (per aggregate)
 non_oligomer_position  = cell(length(filenames),1); %x,y,z,rsid (per aggregate)
 non_oligomer_intensity = cell(length(filenames),1); %intensity,background,z,rsid (per aggregate)
 numbers         = cell(length(filenames),1); %oligomer_nums,non_oligomer_nums,rsid (per slice)
 property        = zeros(size(filenames,1),3); %zi,zf,blank (per fov)
 
-for i = 1%:length(filenames)
+for i = 1:length(filenames)
     img = double(load.Tifread(filenames{i}));
         
     tic
@@ -36,22 +36,25 @@ for i = 1%:length(filenames)
     
     % save objects
     if saved == 1
-        [oligomer_result{i},non_oligomer_position{i},non_oligomer_intensity{i},numbers{i}] = load.BW2table(img,centroids,ndlMask,z,rsid(i));
+        [oligomer_result{i},non_oligomer_position{i},non_oligomer_intensity{i},numbers{i}] = load.BW2table(img,centroids,ndlMask,z,[rsid(i),0,0]);
     else
         f = visual.plotAllMask(img,dlMask,ndlMask,1,1,[0 500],0.25);
         % close all
     end
-    ttime = toc
+    ttime = toc;
 
-    % fprintf(['Estimate remaining time: ',num2str((ttime*(length(filenames)-i)/60),'%.1f'),' min, finish ',num2str(i),'/',num2str(length(filenames)),'\n']);
+    fprintf(['Estimate remaining time: ',num2str((ttime*(length(filenames)-i)/60),'%.1f'),' min, finish ',num2str(i),'/',num2str(length(filenames)),'\n']);
 end
 
-% %% long-format result save
-% T1 = array2table(numbers,"VariableNames",{'small_nums','large_nums','rsid'});
-% writetable(T1,'numbers_result.csv');
-% 
-% T2 = array2table(oligomer_result,"VariableNames",{'x','y','z','sum_intensity','bg','rsid'});
-% writetable(T2,'oligomer_result.csv');
-% 
-% T3 = array2table(non_oligomer_position,"VariableNames",{'x','y','z','rsid'});
-% writetable(T3,'non_oligomer_result.csv');
+%% long-format result save
+T1 = array2table(vertcat(numbers{:}),"VariableNames",{'small_nums','large_nums','rsid','grid','position'});
+writetable(T1,'numbers_result.csv');
+
+T2 = array2table(vertcat(oligomer_result{:}),"VariableNames",{'x','y','z','sum_intensity','bg','rsid','grid','position'});
+writetable(T2,'oligomer_result.csv');
+
+T3 = array2table(vertcat(non_oligomer_intensity{:}),"VariableNames",{'intensity','background','z','rsid','grid','position'});
+writetable(T3,'non_oligomer_intensity.csv');
+
+T4 = array2table(vertcat(non_oligomer_position{:}),"VariableNames",{'x','y','z','rsid','grid','position'});
+writetable(T4,'non_oligomer_position.csv');
