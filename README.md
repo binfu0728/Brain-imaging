@@ -2,6 +2,8 @@
 
 ***code***: The formal version of the detection and analysis code
 
+***- 31/05/23 update***: update on code v3 to integrate autofocus filtering and radiality fileting together
+
 ***- 14/05/23 update***: New gain and offset map for sCMOS camera on the sycamore microscope
 
 ***- 13/04/23 update***: update on defining radiality and add percentage thresholding to the code
