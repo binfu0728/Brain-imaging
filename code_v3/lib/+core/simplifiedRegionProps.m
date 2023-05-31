@@ -11,6 +11,7 @@ function [pixelIdxList,areas,centroids] = simplifiedRegionProps(BW,imsz)
     end
 end
 
+%%
 function [pixelIdxList,numObjects] = bwconncomp_2d(BW,mode)
     %BWCONNCOMP_2D Label connected components in 2-D binary image.
     %   BWCONNCOMP_2D(BW,mode) is called by bwconncomp to get the linear indices of

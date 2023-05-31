@@ -1,13 +1,16 @@
-function [gain,offset] = loadMap(name,imsz)
-    if nargin < 2
+function [gain,offset] = loadMap(name,z,imsz)
+    if nargin < 3
         imsz = [];
     end
 
     if ~isempty(name)
-        load(['gain_',name,'.mat']);
-        load(['offset_',name,'.mat']);
+        gain = load(['gain_',name,'.mat']).gain;
+        offset = load(['offset_',name,'.mat']).offset;
     else
         gain   = ones(imsz);
         offset = zeros(imsz);
     end
+
+    gain    = repmat(gain,[1 1 z]);
+    offset  = repmat(offset,[1 1 z]);
 end

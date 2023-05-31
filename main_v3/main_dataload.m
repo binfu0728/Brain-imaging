@@ -13,6 +13,7 @@ for i = 1:length(filenames)
 end
 
 %% write table
-T.zi = zs(:,1);
-T.zf = zs(:,2);
-writetable(T,'test_metadata.csv');
+% T.zi = zs(:,1);
+% T.zf = zs(:,2);
+T = T(2:2:end,:);
+writetable(T(1:50,:),'test_metadata_Emma.xlsx');

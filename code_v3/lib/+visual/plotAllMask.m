@@ -8,6 +8,7 @@ function f = plotAllMask(img,smallM,largeM,flagS,flagL,contrast,pauseTime,range)
     
     for i = range(1):range(2)
         f = figure; imshow(img(:,:,i),contrast);
+        f = figure; imshow(img(:,:,i),contrast);
         pause(pauseTime);
         if flagS == 1
             visual.plotBinaryMask(f,smallM(:,:,i),[0.92,0.5,0.38]);

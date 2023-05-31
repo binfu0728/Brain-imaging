@@ -1,4 +1,4 @@
-function [esti_inten,esti_bg] = fastIntensityEstimation(img,centroids) 
+function [esti_inten,esti_bg] = oligomerIntensityEstimation(img,centroids) 
     imsz       = size(img); 
     ind        = core.sub2ind2d(imsz,centroids(:,2),centroids(:,1));
     esti_inten = zeros(length(ind),1); %estimated sum intensity
