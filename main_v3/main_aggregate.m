@@ -48,13 +48,13 @@ end
 
 %% long-format result save
 T1 = array2table(vertcat(numbers{:}),"VariableNames",{'small_nums','large_nums','rsid','grid','position'});
-writetable(T1,'numbers_result.csv');
+writetable(T1,'numbers_result.xlsx');
 
 T2 = array2table(vertcat(oligomer_result{:}),"VariableNames",{'x','y','z','sum_intensity','bg','rsid','grid','position'});
-writetable(T2,'oligomer_result.csv');
+writetable(T2,'oligomer_result.xlsx');
 
 T3 = array2table(vertcat(non_oligomer_intensity{:}),"VariableNames",{'intensity','background','z','rsid','grid','position'});
-writetable(T3,'non_oligomer_intensity.csv');
+writetable(T3,'non_oligomer_intensity.xlsx');
 
 T4 = array2table(vertcat(non_oligomer_position{:}),"VariableNames",{'x','y','z','rsid','grid','position'});
-writetable(T4,'non_oligomer_position.csv');
+writetable(T4,'non_oligomer_position.xlsx');
