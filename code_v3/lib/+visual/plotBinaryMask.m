@@ -13,7 +13,7 @@ function [] = plotBinaryMask(f,BW,colour,method,zimg)
             boundaries = bwboundaries(BW, 'noholes');
             for j = 1:numObj
                 b = boundaries{j};
-                plot(b(:,2),b(:,1),'r','linewidth',2.5,'Color',colour); %Plot boundary
+                plot(b(:,2),b(:,1),'r','linewidth',1.5,'Color',colour); %Plot boundary
         
                 % ind = find(labelBW==j);
                 % [m,n] = ind2sub(size(BW), ind);

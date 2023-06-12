@@ -3,9 +3,9 @@ function [oligomer_result,non_oligomer_position,non_oligomer_intensity,numbers] 
         information = [0 0 0];
     end
     oligomer_result        = []; %x,y,z,intensity,background,rsid,grid,position
-    non_oligomer_position  = []; %x,y,z,rsid,grid,position
+    non_oligomer_position  = []; %row,col,z,rsid,grid,position
     non_oligomer_intensity = []; %intensity,background,z,rsid,grid,position
-    numbers = zeros(size(img,3),5); %oligomer_nums,non_oligomer_nums,rsid,grid,position
+    numbers = zeros(z(2)-z(1)+1,5); %oligomer_nums,non_oligomer_nums,rsid,grid,position
     
     imsz = size(img);
     structure = strel('disk',4);
@@ -39,17 +39,17 @@ function [oligomer_result,non_oligomer_position,non_oligomer_intensity,numbers] 
         end
         
         if ~isempty(boundaries2)
-            tmpt_non_oligomer_position  = [boundaries2,repmat(i,size(boundaries2,1),1)]; %x,y,z
+            tmpt_non_oligomer_position  = [boundaries2,repmat(i,size(boundaries2,1),1)]; %row,col,z
             tmpt_non_oligomer_intensity = [ity_ndl, bg_ndl, repmat(i,size(boundaries,1),1)]; %intensity,background,z
         else
-            tmpt_non_oligomer_position  = []; %x,y,z
+            tmpt_non_oligomer_position  = []; %row,col,z
             tmpt_non_oligomer_intensity = []; %intensity,background,z
         end
         non_oligomer_position  = [non_oligomer_position;tmpt_non_oligomer_position];
         non_oligomer_intensity = [non_oligomer_intensity;tmpt_non_oligomer_intensity];
 
         % number analysis
-        numbers(i,:) = [size(centroids{i},1),size(boundaries,1),information];
+        numbers(i-z(1)+1,:) = [size(centroids{i},1),size(boundaries,1),information];
     end
 
     oligomer_result        = [oligomer_result,repmat(information,size(oligomer_result,1),1)];

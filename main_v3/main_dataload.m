@@ -4,16 +4,5 @@ filedir           = 'D:\sycamore_compare_2\'; %main directory where you have the
 T                 = core.makeMetadata(filedir);
 filenames         = T.filenames;
 
-%% Read through all folders and select used slices
-
-for i = 1:length(filenames)
-    tiff_info   = imfinfo(filenames{i}); %length of tiffinfo = number of tif images in a tif stack
-    zs(i,:)     = [1 length(tiff_info)]; %[zi zf]
-    i
-end
-
-%% write table
-% T.zi = zs(:,1);
-% T.zf = zs(:,2);
-T = T(2:2:end,:);
-writetable(T(1:50,:),'test_metadata_Emma.xlsx');
+%%
+writetable(T,'test_metadata.xlsx');

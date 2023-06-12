@@ -23,7 +23,7 @@ for i = 1:length(filenames)
     [img2,Gx,Gy,focusScore,integeralScore] = core.calculateGradientField(img,k1);
     
     % autofocusing checking
-    if integeralScore < t_integral/1e7 %empty frame
+    if integeralScore < t_integral %empty frame
         property(i,3) = 1;
         continue
     else
@@ -32,7 +32,7 @@ for i = 1:length(filenames)
     end
     
     %aggregate detection
-    [dlMask,ndlMask,centroids] = main.featureDetection(img,img2,Gx,Gy,k2,0.05,[0.09 10],z);
+    [dlMask,ndlMask,centroids] = main.featureDetection(img,img2,Gx,Gy,k2,0.075,[1.5 8 6],z);
     
     % save objects
     if saved == 1

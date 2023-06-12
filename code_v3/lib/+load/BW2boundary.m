@@ -7,8 +7,9 @@ function mat = BW2boundary(BW,z)
     mat = [];
     for j = 1:size(BW,3)
         L = bwlabel(BW(:,:,j), 8);
-        boundaries = images.internal.builtins.bwboundaries(L, 8);
+        boundaries = images.internal.builtins.bwboundaries(L, 8);%row,col
         boundaries = cell2mat(boundaries);
-        mat = [boundaries,repmat(z(1)+j-1,size(boundaries,1),1)];
+        boundaries = [boundaries,repmat(z(1)+j-1,size(boundaries,1),1)];
+        mat = [mat;boundaries];
     end
 end

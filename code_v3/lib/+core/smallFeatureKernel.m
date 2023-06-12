@@ -13,11 +13,11 @@ function [dlMask,ndlMask,centroids,radiality] = smallFeatureKernel(img,largeMask
 
     BW(img1>thres) = 1;
     BW   = BW | largeMask; %mask contains all detected features regardless of size
-    
+
     if rdl(1) == 0 && rdl(2) == 0 %no radiality is used
         BW = imopen(BW,strel('disk',1)); %filter tiny objects from spurious pixel noise
     else
-        BW = bwareaopen(BW,5); %filter tiny objects from spurious pixel noise
+        BW = bwareaopen(BW,6); %filter tiny objects from spurious pixel noise
     end
     
     imsz = size(img);
@@ -42,9 +42,15 @@ function [dlMask,ndlMask,centroids,radiality] = smallFeatureKernel(img,largeMask
     %diffraction limit objects filtering (radiality)
     pil_small = pixelIdxList(idxs);
     centroids = centroids(idxs,:);
+
+        
+    % f = figure;imshow(img,[0 300]);
+    % bw = core.fillRegion(imsz,pil_small);
+    % visual.plotBinaryMask(f,bw,[0.6 0.3 0.7]);
+
     radiality = core.calculateRadiality(pil_small,img2,Gx,Gy,imsz);
     
-    idxs      = radiality(:,1)>=rdl(1) & radiality(:,2)>=rdl(2); %objects with enough radiality
+    idxs      = radiality(:,1)>=rdl(1) & radiality(:,2)>=rdl(2) & radiality(:,3)>=rdl(3); %objects with enough radiality
     centroids = floor(centroids(idxs,:));
     dlMask    = core.fillRegion(imsz,pil_small(idxs));
 end

@@ -30,8 +30,6 @@ function T = makeMetadata(filedir)
         s           = str2num(s{1});
         rsid{i}     = r + 0.01*s; %assign rsid based on the sample
     end
-    zi = num2cell(zeros(length(filenames),1));
-    zf = zi;
-    T  = [filenames,rsid,rounds,samples,zi,zf];
-    T  = cell2table(T,'VariableNames',{'filenames','rsid','round','samples','zi','zf'});
+    T  = [filenames,rsid,rounds,samples];
+    T  = cell2table(T,'VariableNames',{'filenames','rsid','round','samples'});
 end
