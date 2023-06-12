@@ -2,7 +2,7 @@ clc;clear;addpath(genpath('C:\Users\bf341\Desktop\code_v3\'));
 
 [gain,offset] = load.loadMap('sycamore',17);
 [t_differential,t_integral] = load.loadInfocusThreshold('sycamore');
-[filenames,filepath,~,rsid] = load.loadMeta('test_metadata.xlsx'); %load metadata to specify where images are saved and how to load them
+[filenames,filepath,rsid] = load.loadMeta('test_metadata.xlsx'); %load metadata to specify where images are saved and how to load them
 [k1,k2] = core.createKernel(1.4,2); %create kernels for the image processing
 
 %% process
