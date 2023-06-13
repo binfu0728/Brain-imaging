@@ -202,7 +202,7 @@ for i = 4%1:nb_of_samples
             if any(ismember(g,agg_onZedges))
                 missing_part = agg_continuity(labeled_sagg_parts, img_masked);
                 if missing_part == 1
-                    agg_id = strcat(agg_id, 'zcut'); 
+                    agg_id = strcat(agg_id, '_zcut'); 
                 end
             end
             % get new bounding box 
