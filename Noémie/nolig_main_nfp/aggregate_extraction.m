@@ -2,7 +2,6 @@
 data = readmatrix('non_oligomer_result.csv', 'HeaderLines', 1); % headers are x,y,z,rsid
 
 test_duplicates = 0;
-ds_mask_save = 0;
 
 % Extract rsids
 agg_rsid = data(:, 4);
@@ -11,7 +10,7 @@ nb_of_samples = length(rsids); % nb of samples that appear in non oligo result, 
 
 samples_exagg = []; % to save samples with extracted aggregates
 
-for i = 1:nb_of_samples
+for i = 4%1:nb_of_samples
     % identify sample's data location in the csv file
     ze = zeros(size(samplenum));
     ze(samplenum == i) = 1;
@@ -85,12 +84,6 @@ for i = 1:nb_of_samples
         agg_mask(y, x, z) = 1;
     end
 
-    % datastore save, need to figure out what i want to keep and where to store it
-    if ds_mask_save == 1
-        maskname = strcat('mask_',imgfile_id, '.mat');
-        save(maskname, 'agg_mask')
-    end
-
     % label each aggregate 
     conn = 26; % 3D connection parameter
     labeled_mask = bwlabeln(agg_mask, conn);
@@ -119,7 +112,7 @@ for i = 1:nb_of_samples
 
     voxel_threshold = 1000; 
 
-    single_agg_idx_insample = []; % to save single aggs' indices in og_img
+    single_agg_idx_insample = []; % to save single aggs' indices 
 
     for k = 1: length(all_agg_labels)
         g = all_agg_labels(k);
@@ -133,32 +126,16 @@ for i = 1:nb_of_samples
         if sum(labeled_mask_object,'all') < voxel_threshold 
             continue 
         end
-        
-        % For further analysis, get single aggregate position relative to whole sample
-        for p = 1:depth
-            [a,b] = find(labeled_mask_object(:,:,p) > 0); %[a b] = [row col]
-            zz = (repelem(p,length(a)))';
-            agg_idd = (repelem(g, length(a)))';
-            sagg_result = [b,a,zz, agg_idd]; % change to save only average position or center of mass/intensity
-            single_agg_idx_insample = [single_agg_idx_insample; sagg_result]; 
-        end
 
-
-        % to get box with aggregate inside
 
         % get single aggregate properties
-        props = regionprops3(CC, 'BoundingBox', 'ConvexImage', 'Image', 'Volume', 'VoxelIdxList'); % many more possibilities
-        boundBox = props.BoundingBox; % see boundingbox fct % outputs [upleftfront_x, upleftfront_y, upleftfront_z, width_x, width_y, width_z]
+        props = regionprops3(CC, 'BoundingBox');
+        boundBox = props.BoundingBox; % outputs [upleftfront_x, upleftfront_y, upleftfront_z, width_x, width_y, width_z]
         boundingBox = [(boundBox(:,1:3) + 0.5), (boundBox(:,4:6) - 1)]; % 'BoundingBox' extends coordinates by 0.5 pixels so adding 0.5 gives the right coordinates
-        % outputs not used yet
-        vox_img = props.ConvexImage;
-        single_agg_bnmask = props.Image;
-        single_agg_vol = props.Volume;
-        single_agg_linIdx = props.VoxelIdxList;
 
         % crop og_img and mask to boundingBox and invert mask to get average surrounding pixel intensity
         cropped_og = imcrop3(og_img, boundingBox);
-        cropped_mask = imcrop3(labeled_mask, boundingBox); % mask of all non oligo to keep only background
+        cropped_mask = imcrop3(labeled_mask, boundingBox); % using mask of all non oligo to keep only background
 
         cropped_img_inv_mask = cropped_og;
         cropped_img_inv_mask(cropped_mask >= 1) = 0;
@@ -166,19 +143,85 @@ for i = 1:nb_of_samples
 
         % substract background from og_img
         adj_img = og_img - avbg_intens;
+        adj_img(adj_img < 0) = 0; % set negative values to 0
 
         % apply mask to adj_img before cropping 
         img_masked = adj_img ;
         img_masked (labeled_mask_object == 0) = 0;
 
-        % crop 3d image 
-        single_agg = imcrop3(img_masked, boundingBox); 
+        % refind boundingBox because intensity adjustment adds zeros 
+        sagg = bwareaopen((img_masked > 0), 10, conn); % gets rid of small conncomps that got isolated in previous step - could go deeper using quartiles or mean deviation, etc.
+        [labeled_sagg_parts, nn] = bwlabeln(sagg, conn);
+        cc = bwconncomp(labeled_sagg_parts, conn);
+        % apply new mask without isolated voxels to adj_img
+        img_masked = adj_img ;
+        img_masked(sagg == 0) = 0;
 
-        % if agg's label in agg_onZedges, test continuity with agg_continuity fct to be written
-        % if is_out = false, mention it in agg_id or delete
+        % if any, disconnected larger components should now be considered as separate single aggregates
+        if nn > 1
+            % identify aggregates on z edges
+            [sagg_labels, sagg_onZedges] = agg_edge_check(labeled_sagg_parts, imsz);
+            
+            for s = 1:nn
+                nid = string(nn);
+                agg_id = strcat(agg_id, '.', nid);
 
-        % save 3d image in tif file
-        agg_tiffile_save(single_agg, newfolderpath, imgfile_id, agg_id) 
+                labl_im = zeros(imsz);
+                labl_im(sagg == s) = 1;
+
+                img_mask = labl_im .*img_masked; % original size array with new mask applied to isolate aggregate 
+
+                % test if aggregate seems to continue outside of original img size 
+                if any(ismember(nn,sagg_onZedges))
+                    missing_part = agg_continuity(labl_im, img_mask);
+                    if missing_part == 1
+                        agg_id = strcat(agg_id, '_zcut'); 
+                    end
+                end
+                % get new bounding box 
+                cc = bwconncomp(labl_im, conn);
+                props2 = regionprops3(cc, 'BoundingBox', 'VoxelList');
+                boundBox2 = props2.BoundingBox;
+                boundingBox2 = [(boundBox2(:,1:3) + 0.5), (boundBox2(:,4:6) - 1)];
+                
+                % save [x y z id] aggregate positions relative to whole sample
+                pos = cell2mat(props2.VoxelList);
+                agg_idd = (repelem(agg_id, length(pos)))';
+                sagg_result = [pos, agg_idd]; % change to save only average position or center of mass/intensity
+                single_agg_idx_insample = [single_agg_idx_insample; sagg_result]; 
+
+                % crop 3d image 
+                single_agg = imcrop3(img_mask, boundingBox2);         
+                
+                % save 3d image in tif file, doesnt rewrite file if filename already exists 
+                agg_tiffile_save(single_agg, newfolderpath, imgfile_id, agg_id) 
+            end
+            
+        else
+            % test if aggregate seems to continue outside of original img size 
+            if any(ismember(g,agg_onZedges))
+                missing_part = agg_continuity(labeled_sagg_parts, img_masked);
+                if missing_part == 1
+                    agg_id = strcat(agg_id, 'zcut'); 
+                end
+            end
+            % get new bounding box 
+            props2 = regionprops3(cc, 'BoundingBox', 'VoxelList');
+            boundBox2 = props2.BoundingBox;
+            boundingBox2 = [(boundBox2(:,1:3) + 0.5), (boundBox2(:,4:6) - 1)];
+            
+            % save [x y z id] aggregate positions relative to whole sample
+            pos = cell2mat(props2.VoxelList);
+            agg_idd = (repelem(agg_id, length(pos)))';
+            sagg_result = [pos, agg_idd]; % change to save only average position or center of mass/intensity
+            single_agg_idx_insample = [single_agg_idx_insample; sagg_result]; 
+
+            % crop 3d image 
+            single_agg = imcrop3(img_masked, boundingBox2);         
+            
+            % save 3d image in tif file, doesnt rewrite file if filename already exists 
+            agg_tiffile_save(single_agg, newfolderpath, imgfile_id, agg_id) 
+        end
 
    end
    
