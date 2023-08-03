@@ -10,7 +10,7 @@ function T = makeMetadata(filedir)
     folders   = {files.folder}';
     filenames = fullfile(folders,names);
     num_slash = length(strfind(filedir,'\')); % how many slashes in the file direction
-
+                                
 %     idx       = cell2mat(cellfun(@(x) strfind(x,'Round'),filenames,'UniformOutput',false));
 %     rounds    = cellfun(@(x) x(idx:idx+5),filenames,'UniformOutput',false);
 %     rsid      = cellfun(@(x) x(idx+5:idx+5),filenames,'UniformOutput',false); %assign rsid based on the round
@@ -21,6 +21,10 @@ function T = makeMetadata(filedir)
   
     for i = 1:length(files)
         tmpt = filenames{i};
+        isagg = contains(tmpt,'Single aggregates');
+        if isagg == 1
+            continue % so aggregates tif files dont get rsdi info and can be ignored in further steps
+        end
         idx  = strfind(tmpt,'\');
         rounds{i}   = tmpt(idx(num_slash)+1:idx(num_slash+1)-1);
         samples{i}  = tmpt(idx(num_slash+1)+1:idx(num_slash+2)-1);
@@ -34,4 +38,15 @@ function T = makeMetadata(filedir)
     zf = zi;
     T  = [filenames,rsid,rounds,samples,zi,zf];
     T  = cell2table(T,'VariableNames',{'filenames','rsid','round','samples','zi','zf'});
+    
+    % del rows of aggregate tif files (empty rsid)
+    rows_to_del = [];
+    for h = 1:length(filenames)
+        %id = cell2mat(table2array(T(h,2)));
+        id = table2array(T(h,2));
+        if isempty(id)
+            rows_to_del = [rows_to_del h];
+        end
+    end
+    T(rows_to_del,:) = [];
 end

@@ -49,7 +49,7 @@ function [smallM,largeM,centroids,radiality] = aggregateDetection(img,k1,k2,thre
     %diffraction limit objects filtering
     pil_small = pixelIdxList(idxs);
     centroids = centroids(idxs,:);
-    radiality = core.calculateRadiality(pil_small,img2,imsz); 
+    radiality = core.calculateRadiality_oldversion(pil_small,img2,imsz); 
     
     idxs      = radiality(:,1)>=rdl(1) & radiality(:,2)>=rdl(2); %objects with enough radiality 
     centroids = floor(centroids(idxs,:));
