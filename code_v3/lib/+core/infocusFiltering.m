@@ -16,6 +16,9 @@ function z = infocusFiltering(focusScore,t_differential)
     if isempty(zf); zf = length(focusScore); end %last slice in focus
 
     zi = zi(1); zf = length(focusScore)-zf(end)+1;
+    if zi>zf 
+        zi = 1; 
+    end
     z  = [zi,zf];
 end
 
