@@ -2,6 +2,8 @@
 
 ***code***: The formal version of the detection and analysis code
 
+***- 09/05/24 update***: The RASP paper version is uploaded
+
 ***- 12/06/23 update***: update on the radiality (2 input, absolute magnitude and direction, 3 input, absolute magnitude, relative magnitude and  direction) and also rewrite centre finding for the radiality from find max to find weighted centroid. Also update on focus score, which takes the log value.
 
 ***- 31/05/23 update***: update on code v3 to integrate autofocus filtering and radiality fileting together
